@@ -7,29 +7,29 @@ export const useSelection = (items = []) => {
     setSelected([]);
   }, [items]);
 
-  const handleSelectAll = useCallback(() => {
+  const onSelectAll = useCallback(() => {
     setSelected([...items]);
   }, [items]);
 
-  const handleSelectOne = useCallback((item) => {
+  const onSelectOne = useCallback((item) => {
     setSelected((prevState) => [...prevState, item]);
   }, []);
 
-  const handleDeselectAll = useCallback(() => {
+  const onDeselectAll = useCallback(() => {
     setSelected([]);
   }, []);
 
-  const handleDeselectOne = useCallback((item) => {
+  const onDeselectOne = useCallback((item) => {
     setSelected((prevState) => {
       return prevState.filter((_item) => _item !== item);
     });
   }, []);
 
   return {
-    handleDeselectAll,
-    handleDeselectOne,
-    handleSelectAll,
-    handleSelectOne,
+    onDeselectAll,
+    onDeselectOne,
+    onSelectAll,
+    onSelectOne,
     selected
   };
 };

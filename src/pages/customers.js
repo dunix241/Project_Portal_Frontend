@@ -1,15 +1,27 @@
-import { useCallback, useMemo, useState } from 'react';
+import { useState } from 'react';
 import Head from 'next/head';
-import { subDays, subHours } from 'date-fns';
+import { format, subDays, subHours } from 'date-fns';
 import ArrowDownOnSquareIcon from '@heroicons/react/24/solid/ArrowDownOnSquareIcon';
 import ArrowUpOnSquareIcon from '@heroicons/react/24/solid/ArrowUpOnSquareIcon';
 import PlusIcon from '@heroicons/react/24/solid/PlusIcon';
-import { Box, Button, Container, Stack, SvgIcon, Typography } from '@mui/material';
-import { useSelection } from 'src/hooks/use-selection';
+import {
+  Avatar,
+  Box,
+  Button,
+  Container,
+  Stack,
+  SvgIcon,
+  TextField,
+  Typography
+} from '@mui/material';
 import { Layout as DashboardLayout } from 'src/layouts/dashboard/layout';
-import { CustomersTable } from 'src/sections/customer/customers-table';
 import { CustomersSearch } from 'src/sections/customer/customers-search';
-import { applyPagination } from 'src/utils/apply-pagination';
+import { ETable } from '../components/table';
+import { getInitials } from '../utils/get-initials';
+import { useTable } from '../hooks/use-table';
+import { PencilSquareIcon, TrashIcon } from '@heroicons/react/24/outline';
+import { EDialog } from '../components/dialog';
+import { useDialog } from '../hooks/use-dialog';
 
 const now = new Date();
 
@@ -156,51 +168,103 @@ const data = [
   }
 ];
 
-const useCustomers = (page, rowsPerPage) => {
-  return useMemo(
-    () => {
-      return applyPagination(data, page, rowsPerPage);
-    },
-    [page, rowsPerPage]
-  );
-};
+const DialogContent = (props) => {
+  const {dialogType, data, handleActions} = props;
+  if (dialogType === 'add_customer' || dialogType === 'edit_customer') {
+    return <Stack spacing={1}>
+      <TextField
+        size={'small'}
+        label={'Name'}
+        fullWidth
+        value={data.name}
+        onChange={(event) => handleActions('name', event.target.value)}
+        disabled={dialogType === 'edit_customer'}
+      />
+      <TextField
+        size={'small'}
+        label={'Email'}
+        fullWidth
+        value={data.email}
+        onChange={(event) => handleActions('email', event.target.value)}
+      />
+      <TextField
+        size={'small'}
+        label={'Phone'}
+        fullWidth
+        value={data.phone}
+        onChange={(event) => handleActions('phone', event.target.value)}
+      />
+    </Stack>
+  }
 
-const useCustomerIds = (customers) => {
-  return useMemo(
-    () => {
-      return customers.map((customer) => customer.id);
-    },
-    [customers]
-  );
-};
+  if (dialogType === 'remove_customer') {
+    return <Box>
+      {/* <Typography>{`Are you sure you want to remove this customer: ${data.name}?`}</Typography> */}
+      <Typography>{`Are you sure you want to remove this customer?`}</Typography>
+      <Typography>{`${data.name} - ${data.email}`}</Typography>
+    </Box>
+  }
+  return null
+}
 
 const Page = () => {
-  const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(5);
-  const customers = useCustomers(page, rowsPerPage);
-  const customersIds = useCustomerIds(customers);
-  const customersSelection = useSelection(customersIds);
+  const tableConfig = useTable({data});
+  const title = 'Customers';
+  const [dialogState, setDialogState] = useState({
+    dialogType: '',
+    title: '',
+    data: {},
+  })
 
-  const handlePageChange = useCallback(
-    (event, value) => {
-      setPage(value);
-    },
-    []
-  );
+  const dialogConfig = useDialog({
+    title: dialogState.title,
+  });
 
-  const handleRowsPerPageChange = useCallback(
-    (event) => {
-      setRowsPerPage(event.target.value);
-    },
-    []
-  );
+  const handleOpenDialog = (dialogType, title, data) => {
+    dialogConfig.onOpen();
+    setDialogState(prev => ({
+      ...prev,
+      dialogType,
+      title,
+      data,
+    }))
+  }
+
+  const disableSubmitting = () => {
+    const {dialogType, data} = dialogState
+    if (dialogType === 'add_customer' || dialogType === 'edit_customer') {
+      return !data.name || !data.email || !data.phone
+    }
+    return false;
+  }
+
+  const handleActions = (actionType, data) => {
+    if (actionType === 'add_customer') {
+      handleOpenDialog(actionType, 'Add Customer', data)
+    } else if (actionType === 'edit_customer') {
+      handleOpenDialog(actionType, 'Edit Customer', data)
+    } else if (actionType === 'remove_customer') {
+      handleOpenDialog(actionType, 'We Remind You', data)
+    } else if (actionType === 'submit') {
+      console.log('submitting');
+      dialogConfig.onClose();
+    } else if (actionType === 'cancel') {
+      dialogConfig.onClose();
+    } else {
+      setDialogState(prev => ({
+        ...prev,
+        data: {
+          ...prev.data,
+          [actionType]: data
+        }
+      }))
+    }
+  }
 
   return (
     <>
       <Head>
-        <title>
-          Customers | Devias Kit
-        </title>
+        <title>{title}</title>
       </Head>
       <Box
         component="main"
@@ -217,9 +281,7 @@ const Page = () => {
               spacing={4}
             >
               <Stack spacing={1}>
-                <Typography variant="h4">
-                  Customers
-                </Typography>
+                <Typography variant="h4">{title}</Typography>
                 <Stack
                   alignItems="center"
                   direction="row"
@@ -249,6 +311,7 @@ const Page = () => {
               </Stack>
               <div>
                 <Button
+                  onClick={() => handleActions('add_customer', {name: '', email: '', phone: ''})}
                   startIcon={(
                     <SvgIcon fontSize="small">
                       <PlusIcon />
@@ -261,22 +324,86 @@ const Page = () => {
               </div>
             </Stack>
             <CustomersSearch />
-            <CustomersTable
+            <ETable
               count={data.length}
-              items={customers}
-              onDeselectAll={customersSelection.handleDeselectAll}
-              onDeselectOne={customersSelection.handleDeselectOne}
-              onPageChange={handlePageChange}
-              onRowsPerPageChange={handleRowsPerPageChange}
-              onSelectAll={customersSelection.handleSelectAll}
-              onSelectOne={customersSelection.handleSelectOne}
-              page={page}
-              rowsPerPage={rowsPerPage}
-              selected={customersSelection.selected}
+              {...tableConfig}
+              columns={[
+                {
+                  field: 'avatar',
+                  label: 'Avatar',
+                  render: (item) => {
+                    return <Stack
+                      alignItems="center"
+                      direction="row"
+                      spacing={2}
+                    >
+                      <Avatar src={item.avatar}>
+                        {getInitials(item.name)}
+                      </Avatar>
+                      <Typography variant="subtitle2">
+                        {item.name}
+                      </Typography>
+                    </Stack>;
+                  }
+                },
+                {
+                  field: 'name',
+                  label: 'Name'
+                },
+                {
+                  field: 'email',
+                  label: 'Email'
+                },
+                {
+                  field: 'address',
+                  label: 'Location',
+                  render: (item) => <>{item.address.city}, {item.address.state}, {item.address.country}</>
+                },
+                {
+                  field: 'phone',
+                  label: 'Phone'
+                },
+                {
+                  field: 'createdAt',
+                  label: 'Signed Up',
+                  render: (item) => <>{format(item.createdAt, 'dd/MM/yyyy')}</>
+                },
+                {
+                  label: 'Actions',
+                  headerProps: {
+                    sx: {
+                      textAlign: 'center'
+                    }
+                  },
+                  render: (item) => <Box>
+                    <Button onClick={() => handleActions('edit_customer', item)}>
+                      <SvgIcon>
+                        <PencilSquareIcon/>
+                      </SvgIcon>
+                    </Button>
+                    <Button onClick={() => handleActions('remove_customer', item)}>
+                      <SvgIcon>
+                        <TrashIcon/>
+                      </SvgIcon>
+                    </Button>
+                  </Box>
+                }
+              ]}
             />
           </Stack>
         </Container>
       </Box>
+      <EDialog
+        {...dialogConfig}
+        renderActions={() => dialogConfig.renderDefaultActions({
+          disableSubmitting: disableSubmitting(),
+          onSubmit: () => handleActions('submit'),
+          onCancel: () => handleActions('cancel'),
+        })}
+        fullWidth
+      >
+        <DialogContent handleActions={handleActions} dialogType={dialogState.dialogType} data={dialogState.data}/>
+      </EDialog>
     </>
   );
 };
