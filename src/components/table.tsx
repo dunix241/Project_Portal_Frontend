@@ -8,11 +8,43 @@ import {
   TableCell,
   TableHead,
   TablePagination,
-  TableRow
+  TableRow, TableSortLabel
 } from '@mui/material';
-import { Scrollbar } from 'src/components/scrollbar';
+import { ReactNode } from 'react';
+import { Scrollbar } from './scrollbar';
+import { TableProps } from '../hooks/table/use-table';
+import {SortFilterProps} from "../hooks/table/use-sort-filter";
 
-export const ETable = (props) => {
+const visuallyHidden = {
+  border: 0,
+  margin: -1,
+  padding: 0,
+  width: '1px',
+  height: '1px',
+  overflow: 'hidden',
+  position: 'absolute',
+  whiteSpace: 'nowrap',
+  clip: 'rect(0 0 0 0)',
+};
+
+type Column = {
+  label: string,
+  field: string,
+  headerProps: any,
+  cellProps: any,
+  render?: (item: any) => ReactNode,
+  sortable: boolean,
+}
+type Options = {
+  sortable: boolean
+}
+type ETableProps = {
+  count: number,
+  columns: Column[],
+  rowsPerPageOptions: number[],
+  options: Options,
+} & TableProps
+export const ETable = (props: ETableProps) => {
   const {
     count = 0,
     items = [],
@@ -23,10 +55,14 @@ export const ETable = (props) => {
     onRowsPerPageChange,
     onSelectAll,
     onSelectOne,
+    orderBy,
+    order,
+    onRequestSort,
     page = 0,
     rowsPerPage = 0,
     selected = [],
-    rowsPerPageOptions = [5, 10, 25]
+    rowsPerPageOptions = [5, 10, 25],
+    options
   } = props;
 
   const selectedSome = (selected.length > 0) && (selected.length < items.length);
@@ -54,7 +90,17 @@ export const ETable = (props) => {
                 </TableCell>
                 {columns.map((column, index) => {
                   return <TableCell key={index} {...column.headerProps}>
-                    {column.label}
+                    <TableSortLabel
+                        hideSortIcon
+                        active={orderBy === column.field}
+                        direction={orderBy === column.field ? order : 'asc'}
+                        onClick={options?.sortable ? ((column.sortable === true || column.sortable === undefined) ? onRequestSort(column.field) : null) : (column.sortable ? onRequestSort(column.field) : null)}
+                    >
+                      {column.label}
+                      {orderBy === column.field ? (
+                          <Box sx={{ ...visuallyHidden }}>{order === 'desc' ? 'sorted descending' : 'sorted ascending'}</Box>
+                      ) : null}
+                    </TableSortLabel>
                   </TableCell>
                 })}
               </TableRow>
@@ -82,7 +128,7 @@ export const ETable = (props) => {
                       />
                     </TableCell>
                     {columns.map((column, index) => {
-                      return <TableCell key={index} {...column.columnProps}>
+                      return <TableCell key={index} {...column.cellProps}>
                         {column.render?.(item) || item[column.field]}
                       </TableCell>
                     })}
@@ -104,19 +150,4 @@ export const ETable = (props) => {
       />
     </Card>
   );
-};
-
-ETable.propTypes = {
-  count: PropTypes.number,
-  items: PropTypes.array,
-  columns: PropTypes.array,
-  onDeselectAll: PropTypes.func,
-  onDeselectOne: PropTypes.func,
-  onPageChange: PropTypes.func,
-  onRowsPerPageChange: PropTypes.func,
-  onSelectAll: PropTypes.func,
-  onSelectOne: PropTypes.func,
-  page: PropTypes.number,
-  rowsPerPage: PropTypes.number,
-  selected: PropTypes.array
 };

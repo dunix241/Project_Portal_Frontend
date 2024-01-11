@@ -1,6 +1,13 @@
 import { useCallback, useEffect, useState } from 'react';
 
-export const useSelection = (items = []) => {
+export type SelectionProps = {
+  onDeselectAll: () => void,
+  onDeselectOne: (id: any) => void,
+  onSelectAll: () => void,
+  onSelectOne: (id: any) => void,
+  selected: any[]
+}
+export const useSelection = (items = []): SelectionProps => {
   const [selected, setSelected] = useState([]);
 
   useEffect(() => {

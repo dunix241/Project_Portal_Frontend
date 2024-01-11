@@ -1,27 +1,18 @@
-import { useState } from 'react';
+import {useState} from 'react';
 import Head from 'next/head';
-import { format, subDays, subHours } from 'date-fns';
+import {format, subDays, subHours} from 'date-fns';
 import ArrowDownOnSquareIcon from '@heroicons/react/24/solid/ArrowDownOnSquareIcon';
 import ArrowUpOnSquareIcon from '@heroicons/react/24/solid/ArrowUpOnSquareIcon';
 import PlusIcon from '@heroicons/react/24/solid/PlusIcon';
-import {
-  Avatar,
-  Box,
-  Button,
-  Container,
-  Stack,
-  SvgIcon,
-  TextField,
-  Typography
-} from '@mui/material';
-import { Layout as DashboardLayout } from 'src/layouts/dashboard/layout';
-import { CustomersSearch } from 'src/sections/customer/customers-search';
-import { ETable } from '../components/table';
-import { getInitials } from '../utils/get-initials';
-import { useTable } from '../hooks/use-table';
-import { PencilSquareIcon, TrashIcon } from '@heroicons/react/24/outline';
-import { EDialog } from '../components/dialog';
-import { useDialog } from '../hooks/use-dialog';
+import {Avatar, Box, Button, Container, Stack, SvgIcon, TextField, Typography} from '@mui/material';
+import {Layout as DashboardLayout} from 'src/layouts/dashboard/layout';
+import {CustomersSearch} from 'src/sections/customer/customers-search';
+import {ETable} from '../components/table';
+import {getInitials} from '../utils/get-initials';
+import {useTable} from '../hooks/table/use-table';
+import {PencilSquareIcon, TrashIcon} from '@heroicons/react/24/outline';
+import {EDialog} from '../components/dialog';
+import {useDialog} from '../hooks/use-dialog';
 
 const now = new Date();
 
@@ -199,7 +190,6 @@ const DialogContent = (props) => {
 
   if (dialogType === 'remove_customer') {
     return <Box>
-      {/* <Typography>{`Are you sure you want to remove this customer: ${data.name}?`}</Typography> */}
       <Typography>{`Are you sure you want to remove this customer?`}</Typography>
       <Typography>{`${data.name} - ${data.email}`}</Typography>
     </Box>
@@ -216,9 +206,7 @@ const Page = () => {
     data: {},
   })
 
-  const dialogConfig = useDialog({
-    title: dialogState.title,
-  });
+  const dialogConfig = useDialog();
 
   const handleOpenDialog = (dialogType, title, data) => {
     dialogConfig.onOpen();
@@ -375,7 +363,8 @@ const Page = () => {
                       textAlign: 'center'
                     }
                   },
-                  render: (item) => <Box>
+                  sortable: false,
+                  render: (item) => <Stack direction={'row'}>
                     <Button onClick={() => handleActions('edit_customer', item)}>
                       <SvgIcon>
                         <PencilSquareIcon/>
@@ -386,14 +375,18 @@ const Page = () => {
                         <TrashIcon/>
                       </SvgIcon>
                     </Button>
-                  </Box>
+                  </Stack>
                 }
               ]}
+              options={{
+                sortable: true
+              }}
             />
           </Stack>
         </Container>
       </Box>
       <EDialog
+          title={dialogState.title}
         {...dialogConfig}
         renderActions={() => dialogConfig.renderDefaultActions({
           disableSubmitting: disableSubmitting(),

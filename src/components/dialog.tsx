@@ -1,6 +1,7 @@
 import PropTypes from 'prop-types';
 import { Button, Dialog, DialogActions, DialogContent, DialogTitle } from '@mui/material';
 import { styled } from '@mui/material/styles';
+import { ReactNode } from 'react';
 
 const Root = styled(Dialog)({
   '& .MuiDialog-paper': {
@@ -11,7 +12,24 @@ const Root = styled(Dialog)({
   }
 });
 
-export const EDialog = (props) => {
+type Action = {
+  render: () => ReactNode
+}
+
+type EDialogProps = {
+  title: string,
+  open: boolean,
+  onClose: () => void,
+  children: ReactNode,
+  renderActions: () => ReactNode,
+  actions: Partial<Action>[],
+  dialogProps?: any,
+  titleProps?: any,
+  contentProps?: any,
+  actionProps?:any
+}
+
+export const EDialog = (props : EDialogProps): ReactNode => {
   const {
     title,
     open,
@@ -27,20 +45,14 @@ export const EDialog = (props) => {
 
   return (
     <Root open={open} onClose={onClose} {...dialogProps}>
-      <DialogTitle>{title}</DialogTitle>
-      <DialogContent>
+      <DialogTitle {...titleProps}>{title}</DialogTitle>
+      <DialogContent {...contentProps}>
         {children}
       </DialogContent>
-      <DialogActions>
+      <DialogActions {...actionProps}>
         {actions?.map(({render, ...props}, index) => <Button key={index} {...props}>{render?.()}</Button>)}
         {renderActions?.()}
       </DialogActions>
     </Root>
   );
-};
-
-EDialog.propTypes = {
-  title: PropTypes.string,
-  open: PropTypes.bool,
-  actions: PropTypes.array,
 };

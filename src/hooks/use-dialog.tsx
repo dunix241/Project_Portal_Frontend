@@ -1,7 +1,21 @@
-import { useState } from 'react';
-import { Button } from '@mui/material';
+import {ReactNode, useState} from 'react';
+import {Button} from '@mui/material';
 
-export const useDialog = ({title}) => {
+type RenderDefaultActionsProps = {
+  onSubmit: () => void,
+  onCancel: () => void,
+  disableSubmitting: boolean,
+  cancelText: string,
+  submitText: string
+}
+type DialogProps = {
+  open: boolean,
+  setOpen: (prev: any) => void,
+  onClose: () => void,
+  onOpen: () => void,
+  renderDefaultActions: (props: RenderDefaultActionsProps) => ReactNode,
+}
+export const useDialog = (): DialogProps => {
   const [open, setOpen] = useState(false);
   const onClose = () => {
     setOpen(false)
@@ -10,7 +24,7 @@ export const useDialog = ({title}) => {
     setOpen(true)
   }
 
-  const renderDefaultActions = (props) => {
+  const renderDefaultActions = (props: RenderDefaultActionsProps): ReactNode => {
     const {onSubmit, onCancel, disableSubmitting, cancelText = 'Cancel', submitText = 'Okay'} = props
     return <>
       {cancelText && <Button size={'small'} onClick={onCancel}>{cancelText}</Button>}
@@ -19,7 +33,6 @@ export const useDialog = ({title}) => {
   }
 
   return {
-    title,
     open,
     setOpen,
     onClose,

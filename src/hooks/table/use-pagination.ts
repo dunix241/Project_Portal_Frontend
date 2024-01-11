@@ -1,6 +1,16 @@
 import { useCallback, useState } from 'react';
 
-export const usePagination = ({initialPage, initialRowsPerPage}) => {
+type UsePaginationProps = {
+  initialPage: number,
+  initialRowsPerPage: number
+}
+export type PaginationProps = {
+  page: number,
+  rowsPerPage: number,
+  onPageChange: (event: any, value: number) => void,
+  onRowsPerPageChange: (event: any) => void
+}
+export const usePagination = ({initialPage, initialRowsPerPage}: UsePaginationProps): PaginationProps => {
   const [page, setPage] = useState(initialPage || 0);
   const [rowsPerPage, setRowsPerPage] = useState(initialRowsPerPage || 5);
 
