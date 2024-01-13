@@ -28,6 +28,15 @@ export const items = [
     )
   },
   {
+    title: 'Products',
+    path: '/products',
+    icon: (
+      <SvgIcon fontSize="small">
+        <UsersIcon />
+      </SvgIcon>
+    )
+  },
+  {
     title: 'Companies',
     path: '/companies',
     icon: (

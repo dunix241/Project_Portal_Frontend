@@ -4,6 +4,7 @@ import { styled } from '@mui/material/styles';
 import { withAuthGuard } from 'src/hocs/with-auth-guard';
 import { SideNav } from './side-nav';
 import { TopNav } from './top-nav';
+import StoreProvider from "../../store/StoreProvider";
 
 const SIDE_NAV_WIDTH = 280;
 
@@ -54,7 +55,9 @@ export const Layout = withAuthGuard((props) => {
       />
       <LayoutRoot>
         <LayoutContainer>
-          {children}
+          <StoreProvider>
+            {children}
+          </StoreProvider>
         </LayoutContainer>
       </LayoutRoot>
     </>
