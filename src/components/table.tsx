@@ -1,19 +1,20 @@
-import PropTypes from 'prop-types';
 import {
   Box,
+  Button,
   Card,
   Checkbox,
+  Stack,
   Table,
   TableBody,
   TableCell,
   TableHead,
   TablePagination,
-  TableRow, TableSortLabel
+  TableRow,
+  TableSortLabel
 } from '@mui/material';
-import { ReactNode } from 'react';
-import { Scrollbar } from './scrollbar';
-import { TableProps } from '../hooks/table/use-table';
-import {SortFilterProps} from "../hooks/table/use-sort-filter";
+import React, {Fragment, ReactNode} from 'react';
+import {Scrollbar} from './scrollbar';
+import {TableProps} from '../hooks/table/use-table';
 
 const visuallyHidden = {
   border: 0,
@@ -42,7 +43,18 @@ type ETableProps = {
   count: number,
   columns: Column[],
   rowsPerPageOptions: number[],
-  options: Options,
+  options: {
+    sortable: boolean
+  },
+  actions: {
+    props: any;
+    title: string;
+    children: ReactNode;
+    name: string,
+    disabled: boolean,
+    onClick: (item: any) => void
+    render: () => ReactNode
+  }[]
 } & TableProps
 export const ETable = (props: ETableProps) => {
   const {
@@ -62,7 +74,8 @@ export const ETable = (props: ETableProps) => {
     rowsPerPage = 0,
     selected = [],
     rowsPerPageOptions = [5, 10, 25],
-    options
+    options,
+    actions
   } = props;
 
   const selectedSome = (selected.length > 0) && (selected.length < items.length);
@@ -103,6 +116,7 @@ export const ETable = (props: ETableProps) => {
                     </TableSortLabel>
                   </TableCell>
                 })}
+                {actions && <TableCell sx={{width: 0, textAlign: 'center'}}>Actions</TableCell>}
               </TableRow>
             </TableHead>
             <TableBody>
@@ -132,6 +146,25 @@ export const ETable = (props: ETableProps) => {
                         {column.render?.(item) || item[column.field]}
                       </TableCell>
                     })}
+                    {actions && <TableCell>
+                      <Stack direction={'row'}>
+                        {actions.map((action, index) => {
+                              return (
+                                  <Fragment key={index}>
+                                    {action.render?.() || <Button
+                                        onClick={() => action.onClick?.(item)}
+                                        disabled={action.disabled}
+                                        title={action.title}
+                                        {...action.props}
+                                    >
+                                      {action.children}
+                                    </Button>}
+                                  </Fragment>
+                              )
+                            }
+                        )}
+                      </Stack>
+                    </TableCell>}
                   </TableRow>
                 );
               })}
