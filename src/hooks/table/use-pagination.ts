@@ -23,9 +23,12 @@ export const usePagination = ({initialPage, initialRowsPerPage}: UsePaginationPr
 
   const onRowsPerPageChange = useCallback(
     (event) => {
-      setRowsPerPage(event.target.value);
+      const value = event.target.value;
+      const newPage = Math.floor(page * rowsPerPage / value);
+      setPage(newPage)
+      setRowsPerPage(value);
     },
-    []
+    [page]
   );
 
   return {

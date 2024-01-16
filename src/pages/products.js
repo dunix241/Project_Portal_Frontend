@@ -16,7 +16,7 @@ import {
   useEditProductMutation,
   useLazyListProductsQuery,
   useRemoveProductMutation
-} from '../agent/productsApi';
+} from '../agent/productApiSlice';
 
 const DialogContent = (props) => {
   const {dialogType, data, handleActions} = props;
