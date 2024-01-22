@@ -50,7 +50,7 @@ export const useTable = (props: UseTableProps): {
     if (getPageItems) {
       getPageItems({page, rowsPerPage, orderBy, order});
     } else {
-      setCount(data.length)
+      setCount(data?.length)
       setItems(applySortPagination({data, page, rowsPerPage, orderBy, order}))
     }
   }, [page, rowsPerPage, orderBy, order]);
