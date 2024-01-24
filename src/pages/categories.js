@@ -16,7 +16,7 @@ import {useDialog} from '../hooks/use-dialog';
 import {
   useCreateCategoryMutation,
   useEditCategoryMutation,
-  useLazyListCategoriesQuery, useRemoveCategoryMutation
+  useLazyListCategoriesQuery, useListCategoriesQuery, useRemoveCategoryMutation
 } from "../agent/categoryApiSlice";
 
 const now = new Date();
@@ -45,13 +45,14 @@ const DialogContent = (props) => {
 }
 
 const Page = () => {
-  const [trigger, {data, error, isLoading, isFetching}] = useLazyListCategoriesQuery()
+  const {data, error, isLoading, isFetching} = useListCategoriesQuery()
   const [createCategory, {isLoading: isCreatingCategory}] = useCreateCategoryMutation()
   const [updateCategory, {isLoading: isUpdatingCategory}] = useEditCategoryMutation()
   const [removeCategory, {isLoading: isRemovingCategory}] = useRemoveCategoryMutation()
   const isPageLoading = isFetching || isCreatingCategory || isUpdatingCategory || isRemovingCategory
 
-  const tableConfig = useTable({data});
+  const tableConfig = useTable({data: data?.categories || []});
+
   const title = 'Categories';
   const [dialogState, setDialogState] = useState({
     dialogType: '',
@@ -180,31 +181,28 @@ const Page = () => {
                   field: 'name',
                   label: 'Name'
                 },
-                {
-                  label: 'Actions',
-                  headerProps: {
-                    sx: {
-                      textAlign: 'center'
-                    }
-                  },
-                  sortable: false,
-                  render: (item) => <Stack direction={'row'}>
-                    <Button onClick={() => handleActions('edit_category', item)}>
-                      <SvgIcon>
-                        <PencilSquareIcon/>
-                      </SvgIcon>
-                    </Button>
-                    <Button onClick={() => handleActions('remove_category', item)}>
-                      <SvgIcon>
-                        <TrashIcon/>
-                      </SvgIcon>
-                    </Button>
-                  </Stack>
-                }
               ]}
               options={{
                 sortable: true
               }}
+              actions={[
+                {
+                  title: 'Edit Product',
+                  children: <SvgIcon><PencilSquareIcon/></SvgIcon>,
+                  onClick: (item) => handleActions('edit_category', item),
+                  props: {
+                    color: 'success'
+                  }
+                },
+                {
+                  title: 'Remove Product',
+                  children: <SvgIcon><TrashIcon/></SvgIcon>,
+                  onClick: (item) => handleActions('remove_category', item),
+                  props: {
+                    color: 'error'
+                  }
+                }
+              ]}
             />
           </Stack>
         </Container>
@@ -214,7 +212,7 @@ const Page = () => {
         {...dialogConfig}
         renderActions={() => dialogConfig.renderDefaultActions({
           disableSubmitting: disableSubmitting(),
-          onSubmit: () => handleActions('submit'),
+          onSubmit: () => handleActions('submit', dialogState.data),
           onCancel: () => handleActions('cancel'),
         })}
         fullWidth
