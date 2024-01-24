@@ -53,7 +53,7 @@ export const useTable = (props: UseTableProps): {
       setCount(data?.length)
       setItems(applySortPagination({data, page, rowsPerPage, orderBy, order}))
     }
-  }, [page, rowsPerPage, orderBy, order]);
+  }, [data, page, rowsPerPage, orderBy, order]);
 
   useEffect(() => {
     if (pageItemsResult) {
