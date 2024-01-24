@@ -2,8 +2,8 @@ import {
   Box,
   Button,
   Card,
-  Checkbox,
-  Stack,
+  Checkbox, Collapse, IconButton,
+  Stack, SvgIcon,
   Table,
   TableBody,
   TableCell,
@@ -12,9 +12,11 @@ import {
   TableRow,
   TableSortLabel
 } from '@mui/material';
-import React, {Fragment, ReactNode} from 'react';
+import React, { Fragment, ReactNode, useState } from 'react';
 import {Scrollbar} from './scrollbar';
 import {TableProps} from '../hooks/table/use-table';
+import { ChevronDownIcon } from '@heroicons/react/24/outline';
+import { ChevronUpIcon } from '@heroicons/react/24/solid';
 
 const visuallyHidden = {
   border: 0,
@@ -44,7 +46,11 @@ type ETableProps = {
   columns: Column[],
   rowsPerPageOptions: number[],
   options: {
-    sortable: boolean
+    sortable: boolean,
+    collapsible?: {
+      title?: string,
+      renderCollapsibleRow: () => ReactNode,
+    },
   },
   actions: {
     props: any;
@@ -80,6 +86,8 @@ export const ETable = (props: ETableProps) => {
 
   const selectedSome = (selected.length > 0) && (selected.length < items.length);
   const selectedAll = (items.length > 0) && (selected.length === items.length);
+  const collapsible = options.collapsible?.renderCollapsibleRow;
+  const columnCount = columns.length + (collapsible ? 1 : 0) + (actions ? 1 : 0) + 1;
 
   return (
     <Card>
@@ -122,50 +130,71 @@ export const ETable = (props: ETableProps) => {
             <TableBody>
               {items.map((item, index) => {
                 const isSelected = selected.includes(index);
+                const [open, setOpen] = useState(false);
 
                 return (
-                  <TableRow
-                    hover
-                    key={index}
-                    selected={isSelected}
-                  >
-                    <TableCell padding="checkbox">
-                      <Checkbox
-                        checked={isSelected}
-                        onChange={(event) => {
-                          if (event.target.checked) {
-                            onSelectOne?.(index);
-                          } else {
-                            onDeselectOne?.(index);
-                          }
-                        }}
-                      />
-                    </TableCell>
-                    {columns.map((column, index) => {
-                      return <TableCell key={index} {...column.cellProps}>
-                        {column.render?.(item) || item[column.field]}
+                  <Fragment key={index}>
+                    <TableRow
+                      hover
+                      key={index}
+                      selected={isSelected}
+                      onClick={(e) => setOpen(!open)}
+                      sx={{
+                        cursor: collapsible ? 'pointer': 'unset',
+                      }}
+                      title={options.collapsible?.title}
+                    >
+                      <TableCell padding="checkbox">
+                        <Checkbox
+                          checked={isSelected}
+                          onChange={(event) => {
+                            if (event.target.checked) {
+                              onSelectOne?.(index);
+                            } else {
+                              onDeselectOne?.(index);
+                            }
+                          }}
+                        />
                       </TableCell>
-                    })}
-                    {actions && <TableCell>
-                      <Stack direction={'row'}>
-                        {actions.map((action, index) => {
+                      {columns.map((column, index) => {
+                        return <TableCell key={index} {...column.cellProps}>
+                          {column.render?.(item) || item[column.field]}
+                        </TableCell>
+                      })}
+                      {actions && <TableCell>
+                        <Stack direction={'row'}>
+                          {actions.map((action, index) => {
                               return (
-                                  <Fragment key={index}>
-                                    {action.render?.() || <Button
-                                        onClick={() => action.onClick?.(item)}
-                                        disabled={action.disabled}
-                                        title={action.title}
-                                        {...action.props}
-                                    >
-                                      {action.children}
-                                    </Button>}
-                                  </Fragment>
+                                <Fragment key={index}>
+                                  {action.render?.() || <Button
+                                    onClick={(e) => {
+                                      e.stopPropagation()
+                                      action.onClick?.(item)
+                                    }}
+                                    disabled={action.disabled}
+                                    title={action.title}
+                                    {...action.props}
+                                  >
+                                    {action.children}
+                                  </Button>}
+                                </Fragment>
                               )
                             }
-                        )}
-                      </Stack>
-                    </TableCell>}
-                  </TableRow>
+                          )}
+                        </Stack>
+                      </TableCell>}
+                    </TableRow>
+                    {
+                      collapsible &&
+                      <TableRow>
+                        <TableCell style={{paddingBottom: 0, paddingTop: 0}} colSpan={columnCount}>
+                          <Collapse in={open}>
+                            {options.collapsible?.renderCollapsibleRow()}
+                          </Collapse>
+                        </TableCell>
+                      </TableRow>
+                    }
+                  </Fragment>
                 );
               })}
             </TableBody>

@@ -356,30 +356,25 @@ const Page = () => {
                   label: 'Signed Up',
                   render: (item) => <>{format(item.createdAt, 'dd/MM/yyyy')}</>
                 },
+              ]}
+              actions={[
                 {
-                  label: 'Actions',
-                  headerProps: {
-                    sx: {
-                      textAlign: 'center'
-                    }
-                  },
-                  sortable: false,
-                  render: (item) => <Stack direction={'row'}>
-                    <Button onClick={() => handleActions('edit_customer', item)}>
-                      <SvgIcon>
-                        <PencilSquareIcon/>
-                      </SvgIcon>
-                    </Button>
-                    <Button onClick={() => handleActions('remove_customer', item)}>
-                      <SvgIcon>
-                        <TrashIcon/>
-                      </SvgIcon>
-                    </Button>
-                  </Stack>
+                  title: 'Edit customer',
+                  children: <SvgIcon><PencilSquareIcon/></SvgIcon>,
+                  onClick: (item) => handleActions('edit_customer', item),
+                },
+                {
+                  title: 'Remove customer',
+                  children: <SvgIcon><TrashIcon/></SvgIcon>,
+                  onClick: (item) => handleActions('remove_customer', item),
                 }
               ]}
               options={{
-                sortable: true
+                sortable: true,
+                collapsible: {
+                  title: 'Show order details',
+                  renderCollapsibleRow: () => <>hello world</>,
+                }
               }}
             />
           </Stack>
