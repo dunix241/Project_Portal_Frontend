@@ -2,8 +2,9 @@ import {
   Box,
   Button,
   Card,
-  Checkbox, Collapse, IconButton,
-  Stack, SvgIcon,
+  Checkbox,
+  Collapse,
+  Stack,
   Table,
   TableBody,
   TableCell,
@@ -12,11 +13,10 @@ import {
   TableRow,
   TableSortLabel
 } from '@mui/material';
-import React, { Fragment, ReactNode, useState } from 'react';
-import {Scrollbar} from './scrollbar';
-import {TableProps} from '../hooks/table/use-table';
-import { ChevronDownIcon } from '@heroicons/react/24/outline';
-import { ChevronUpIcon } from '@heroicons/react/24/solid';
+import React, { Fragment, ReactNode, useMemo } from 'react';
+import { Scrollbar } from './scrollbar';
+import { TableProps } from '../hooks/table/use-table';
+import { useSelection } from '../hooks/table/use-selection';
 
 const visuallyHidden = {
   border: 0,
@@ -54,10 +54,10 @@ type ETableProps = {
   },
   actions: {
     props: any;
-    title: string;
+    title?: string;
     children: ReactNode;
-    name: string,
-    disabled: boolean,
+    disabled?: boolean,
+    shouldDisableWhere?: (item: any) => boolean,
     onClick: (item: any) => void
     render: () => ReactNode
   }[]
@@ -66,6 +66,7 @@ export const ETable = (props: ETableProps) => {
   const {
     count = 0,
     items = [],
+    ids,
     columns = [],
     onDeselectAll,
     onDeselectOne,
@@ -86,8 +87,9 @@ export const ETable = (props: ETableProps) => {
 
   const selectedSome = (selected.length > 0) && (selected.length < items.length);
   const selectedAll = (items.length > 0) && (selected.length === items.length);
-  const collapsible = options.collapsible?.renderCollapsibleRow;
-  const columnCount = columns.length + (collapsible ? 1 : 0) + (actions ? 1 : 0) + 1;
+  const collapsible = useMemo(() => options.collapsible?.renderCollapsibleRow, [options.collapsible?.renderCollapsibleRow]);
+  const columnCount = useMemo(() => columns.length + (collapsible ? 1 : 0) + (actions ? 1 : 0) + 1, [columns, collapsible, actions]);
+  const collapse = useSelection(ids)
 
   return (
     <Card>
@@ -130,7 +132,7 @@ export const ETable = (props: ETableProps) => {
             <TableBody>
               {items.map((item, index) => {
                 const isSelected = selected.includes(index);
-                const [open, setOpen] = useState(false);
+                const open = collapse.selected.includes(index)
 
                 return (
                   <Fragment key={index}>
@@ -138,13 +140,15 @@ export const ETable = (props: ETableProps) => {
                       hover
                       key={index}
                       selected={isSelected}
-                      onClick={(e) => setOpen(!open)}
+                      onClick={(e) => {
+                        open ? collapse.onDeselectOne(index) : collapse.onSelectOne(index)}
+                    }
                       sx={{
                         cursor: collapsible ? 'pointer': 'unset',
                       }}
                       title={options.collapsible?.title}
                     >
-                      <TableCell padding="checkbox">
+                      <TableCell padding="checkbox" onClick={e => e.stopPropagation()}>
                         <Checkbox
                           checked={isSelected}
                           onChange={(event) => {
@@ -161,17 +165,16 @@ export const ETable = (props: ETableProps) => {
                           {column.render?.(item) || item[column.field]}
                         </TableCell>
                       })}
-                      {actions && <TableCell>
+                      {actions && <TableCell onClick={e => e.stopPropagation()}>
                         <Stack direction={'row'}>
                           {actions.map((action, index) => {
                               return (
                                 <Fragment key={index}>
                                   {action.render?.() || <Button
                                     onClick={(e) => {
-                                      e.stopPropagation()
                                       action.onClick?.(item)
                                     }}
-                                    disabled={action.disabled}
+                                    disabled={action.disabled || action.shouldDisableWhere?.(item)}
                                     title={action.title}
                                     {...action.props}
                                   >
