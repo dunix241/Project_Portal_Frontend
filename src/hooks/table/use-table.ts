@@ -21,8 +21,9 @@ type UseTableProps = {
   initialRowsPerPage: number,
 }
 export type TableProps = {
-  items: any[],
-  count: number
+  items: any[];
+  count: number;
+  ids: any[];
 } & PaginationProps & SelectionProps & SortFilterProps
 export const useTable = (props: UseTableProps): {
   onSelectAll: () => void;
@@ -37,6 +38,7 @@ export const useTable = (props: UseTableProps): {
   page: number;
   onDeselectOne: (id: any) => void;
   items: any[];
+  ids: any[];
   selected: any[];
   order: string
 } => {
@@ -73,6 +75,7 @@ export const useTable = (props: UseTableProps): {
 
   return {
     items,
+    ids,
     count,
     page,
     rowsPerPage,
