@@ -49,7 +49,7 @@ type ETableProps = {
     sortable: boolean,
     collapsible?: {
       title?: string,
-      renderCollapsibleRow: () => ReactNode,
+      renderCollapsibleRow: (item: any) => ReactNode,
     },
   },
   actions: {
@@ -189,7 +189,7 @@ export const ETable = (props: ETableProps) => {
                       <TableRow>
                         <TableCell style={{paddingBottom: 0, paddingTop: 0}} colSpan={columnCount}>
                           <Collapse in={open}>
-                            {options.collapsible?.renderCollapsibleRow()}
+                            {options.collapsible?.renderCollapsibleRow(item)}
                           </Collapse>
                         </TableCell>
                       </TableRow>

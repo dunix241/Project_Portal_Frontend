@@ -17,6 +17,8 @@ import {
   useLazyListProductsQuery,
   useRemoveProductMutation
 } from '../agent/productApiSlice';
+import {useListCategoriesQuery} from "../agent/categoryApiSlice";
+import {Autocomplete} from "@mui/lab";
 
 const DialogContent = (props) => {
   const {dialogType, data, handleActions} = props;
@@ -57,6 +59,14 @@ const DialogContent = (props) => {
           value={data.stocks}
           onChange={(event) => handleActions('stocks', event.target.value)}
       />
+      <Autocomplete
+        options={data.categories || []}
+        value={data.categories.find(category => category.id === data.categoryId) || null}
+        isOptionEqualToValue={(option, value) => option.id === value.id}
+        getOptionLabel={(option) => option.name || ''}
+        onChange={(_, value) => handleActions('categoryId', value?.id)}
+        renderInput={(params) => <TextField {...params} label="Categories" />}
+      />
     </Stack>
   }
 
@@ -66,7 +76,7 @@ const DialogContent = (props) => {
       <Typography>{`${data.name}`}</Typography>
     </Box>
   }
-  return null
+  return null;
 }
 
 const Page = () => {
@@ -75,6 +85,8 @@ const Page = () => {
   const [updateProduct, {isLoading: isUpdatingProduct}] = useEditProductMutation()
   const [removeProduct, {isLoading: isRemovingProduct}] = useRemoveProductMutation()
   const isPageLoading = isFetching || isCreatingProduct || isUpdatingProduct || isRemovingProduct
+  const {data: categories, isLoading: isCategoriesLoading, isCategoriesFetching} = useListCategoriesQuery()
+  console.log(categories)
 
   let tableConfig = useTable({
     getPageItems: (query) => {
@@ -194,7 +206,7 @@ const Page = () => {
               </Stack>
               <div>
                 <Button
-                  onClick={() => handleActions('add_product', {name: '', thumbnail: '', description: '', price: 0, discount: 0, stocks: 0, categoryId: '5d23357a-6d05-41e5-9533-4f15fd17a995'})}
+                  onClick={() => handleActions('add_product', {name: '', thumbnail: '', description: '', price: 0, discount: 0, stocks: 0, categoryId: '', categories: categories?.categories})}
                   startIcon={(
                     <SvgIcon fontSize="small">
                       <PlusIcon />
@@ -246,27 +258,10 @@ const Page = () => {
                 //   render: (item) => <>{item?.createDateTime && format(item.createDateTime, 'dd/MM/yyyy')}</>
                 // },
                 {
-                  label: 'Actions',
-                  headerProps: {
-                    sx: {
-                      textAlign: 'center',
-                      width: 0
-                    }
-                  },
-                  sortable: false,
-                  render: (item) => <Stack direction={'row'}>
-                    <Button onClick={() => handleActions('edit_product', item)}>
-                      <SvgIcon>
-                        <PencilSquareIcon/>
-                      </SvgIcon>
-                    </Button>
-                    <Button onClick={() => handleActions('remove_product', item)} color={'error'}>
-                      <SvgIcon>
-                        <TrashIcon/>
-                      </SvgIcon>
-                    </Button>
-                  </Stack>
-                }
+                  field: 'categoryId',
+                  label: 'Category Name',
+                  render: (item) => categories?.categories.find(cate => cate.id === item.categoryId).name
+                },
               ]}
               options={{
                 sortable: true
@@ -275,7 +270,7 @@ const Page = () => {
                 {
                   title: 'Edit Product',
                   children: <SvgIcon><PencilSquareIcon/></SvgIcon>,
-                  onClick: (item) => handleActions('edit_product', item),
+                  onClick: (item) => handleActions('edit_product', {...item, ...categories}),
                   props: {
                     color: 'success'
                   }
