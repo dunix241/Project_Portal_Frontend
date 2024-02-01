@@ -8,7 +8,8 @@ const Root = styled(Dialog)({
     minWidth: '500px'
   },
   '.MuiDialogContent-root': {
-    paddingTop: 8
+    paddingTop: '20px !important'
+
   }
 });
 

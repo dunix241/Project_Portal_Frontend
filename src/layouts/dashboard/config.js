@@ -6,8 +6,9 @@ import UserIcon from '@heroicons/react/24/solid/UserIcon';
 import UserPlusIcon from '@heroicons/react/24/solid/UserPlusIcon';
 import UsersIcon from '@heroicons/react/24/solid/UsersIcon';
 import XCircleIcon from '@heroicons/react/24/solid/XCircleIcon';
-import { SvgIcon } from '@mui/material';
+import {SvgIcon} from '@mui/material';
 import {BookOpenIcon} from "@heroicons/react/20/solid";
+import {ShoppingCartIcon} from "@heroicons/react/24/solid";
 
 export const items = [
   {
@@ -15,7 +16,7 @@ export const items = [
     path: '/',
     icon: (
       <SvgIcon fontSize="small">
-        <ChartBarIcon />
+        <ChartBarIcon/>
       </SvgIcon>
     )
   },
@@ -24,7 +25,7 @@ export const items = [
     path: '/customers',
     icon: (
       <SvgIcon fontSize="small">
-        <UsersIcon />
+        <UsersIcon/>
       </SvgIcon>
     )
   },
@@ -33,7 +34,7 @@ export const items = [
     path: '/products',
     icon: (
       <SvgIcon fontSize="small">
-        <UsersIcon />
+        <UsersIcon/>
       </SvgIcon>
     )
   },
@@ -42,7 +43,16 @@ export const items = [
     path: '/categories',
     icon: (
       <SvgIcon fontSize="small">
-        <BookOpenIcon />
+        <BookOpenIcon/>
+      </SvgIcon>
+    )
+  },
+  {
+    title: 'Orders',
+    path: '/orders',
+    icon: (
+      <SvgIcon fontSize="small">
+        <ShoppingCartIcon/>
       </SvgIcon>
     )
   },
@@ -51,7 +61,7 @@ export const items = [
     path: '/companies',
     icon: (
       <SvgIcon fontSize="small">
-        <ShoppingBagIcon />
+        <ShoppingBagIcon/>
       </SvgIcon>
     )
   },
@@ -60,7 +70,7 @@ export const items = [
     path: '/account',
     icon: (
       <SvgIcon fontSize="small">
-        <UserIcon />
+        <UserIcon/>
       </SvgIcon>
     )
   },
@@ -69,7 +79,7 @@ export const items = [
     path: '/settings',
     icon: (
       <SvgIcon fontSize="small">
-        <CogIcon />
+        <CogIcon/>
       </SvgIcon>
     )
   },
@@ -78,7 +88,7 @@ export const items = [
     path: '/auth/login',
     icon: (
       <SvgIcon fontSize="small">
-        <LockClosedIcon />
+        <LockClosedIcon/>
       </SvgIcon>
     )
   },
@@ -87,7 +97,7 @@ export const items = [
     path: '/auth/register',
     icon: (
       <SvgIcon fontSize="small">
-        <UserPlusIcon />
+        <UserPlusIcon/>
       </SvgIcon>
     )
   },
@@ -96,7 +106,7 @@ export const items = [
     path: '/404',
     icon: (
       <SvgIcon fontSize="small">
-        <XCircleIcon />
+        <XCircleIcon/>
       </SvgIcon>
     )
   }
