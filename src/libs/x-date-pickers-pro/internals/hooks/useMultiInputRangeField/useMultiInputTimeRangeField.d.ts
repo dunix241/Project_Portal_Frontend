@@ -1,0 +1,4 @@
+import type { UseMultiInputTimeRangeFieldDefaultizedProps, UseMultiInputTimeRangeFieldParams, UseMultiInputTimeRangeFieldProps } from '../../../MultiInputTimeRangeField/MultiInputTimeRangeField.types';
+import type { UseMultiInputRangeFieldResponse } from './useMultiInputRangeField.types';
+export declare const useDefaultizedTimeRangeFieldProps: <TDate, AdditionalProps extends {}>(props: UseMultiInputTimeRangeFieldProps<TDate>) => UseMultiInputTimeRangeFieldDefaultizedProps<TDate, AdditionalProps>;
+export declare const useMultiInputTimeRangeField: <TDate, TTextFieldSlotProps extends {}>({ sharedProps: inSharedProps, startTextFieldProps, startInputRef, unstableStartFieldRef, endTextFieldProps, endInputRef, unstableEndFieldRef, }: UseMultiInputTimeRangeFieldParams<TDate, TTextFieldSlotProps>) => UseMultiInputRangeFieldResponse<TTextFieldSlotProps>;
