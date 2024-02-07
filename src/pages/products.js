@@ -206,7 +206,7 @@ const Page = () => {
               </Stack>
               <div>
                 <Button
-                  onClick={() => handleActions('add_product', {name: '', thumbnail: '', description: '', price: 0, discount: 0, stocks: 0, categoryId: '', categories: categories?.categories})}
+                  onClick={() => handleActions('add_product', {name: '', thumbnail: '', description: '', price: 0, discount: 0, stocks: 0, categoryId: null, categories: categories?.categories})}
                   startIcon={(
                     <SvgIcon fontSize="small">
                       <PlusIcon />
@@ -260,7 +260,7 @@ const Page = () => {
                 {
                   field: 'categoryId',
                   label: 'Category Name',
-                  render: (item) => categories?.categories.find(cate => cate.id === item.categoryId).name
+                  render: (item) => categories?.categories.find(cate => cate.id === item.categoryId)?.name
                 },
               ]}
               options={{
