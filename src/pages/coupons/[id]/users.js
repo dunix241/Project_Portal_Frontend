@@ -6,9 +6,13 @@ import PlusIcon from '@heroicons/react/24/solid/PlusIcon';
 import {
   Backdrop,
   Box,
-  Button, Chip,
+  Button,
   CircularProgress,
   Container,
+  FormControl,
+  InputLabel,
+  MenuItem,
+  Select,
   Stack,
   SvgIcon,
   TextField,
@@ -16,76 +20,80 @@ import {
 } from '@mui/material';
 import { Layout as DashboardLayout } from 'src/layouts/dashboard/layout';
 import { CustomersSearch } from 'src/sections/customer/customers-search';
-import { ETable } from '../components/table';
-import { useTable } from '../hooks/table/use-table';
-import { PencilSquareIcon, TrashIcon } from '@heroicons/react/24/outline';
-import { EDialog } from '../components/dialog';
-import { useDialog } from '../hooks/use-dialog';
-import { format } from 'date-fns';
+import { ETable } from 'src/components/table';
+import { useTable } from 'src/hooks/table/use-table';
+import { ChevronLeftIcon, TrashIcon } from '@heroicons/react/24/outline';
+import { EDialog } from 'src/components/dialog';
+import { useDialog } from 'src/hooks/use-dialog';
 import {
-  useCreateCouponMutation,
-  useEditCouponMutation,
-  useLazyListCouponsQuery,
-  useRemoveCouponMutation
-} from '../agent/couponApiSlice';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import { MobileDateRangePicker } from '../libs/x-date-pickers-pro/MobileDateRangePicker';
-import dayjs from 'dayjs';
+  useAddCouponUserMutation,
+  useLazyListCouponUsersQuery,
+  useRemoveCouponUserMutation
+} from 'src/agent/couponApiSlice';
+import { useRouter } from 'next/router';
+import { Autocomplete } from '@mui/lab';
+import { useListUsersQuery } from '../../../agent/userApiSlice';
 
 const DialogContent = (props) => {
   const {dialogType, data, handleActions} = props;
-  if (dialogType === 'add_coupon' || dialogType === 'edit_coupon') {
+  const {item, users} = data
+
+  if (dialogType === 'add_couponUser') {
+    const identifiers = ['userName', 'email']
     return <Stack spacing={1}>
-      <TextField
-        size={'small'}
-        label={'Code'}
-        fullWidth
-        value={data.code}
-        onChange={e => handleActions('code', e.target.value)}
+      <FormControl fullWidth>
+        <InputLabel id="demo-simple-select-label">Identify User By</InputLabel>
+        <Select
+          labelId="demo-simple-select-label"
+          id="demo-simple-select"
+          value={data.userIdentifier || identifiers[0]}
+          label={'Identify User By'}
+          size={'small'}
+          onChange={(event) => handleActions('userIdentifier', event.target.value)}
+        >
+          {identifiers.map((option, index) => <MenuItem key={index} value={option}>{option}</MenuItem>)}
+        </Select>
+      </FormControl>
+      <Autocomplete
+        options={users || []}
+        value={users?.find(user => user.id === data.userId) || null}
+        isOptionEqualToValue={(option, value) => option.id === value.id}
+        getOptionLabel={(option) => option[data.userIdentifier || identifiers[0]] || ''}
+        onChange={(_, value) => handleActions('userId', value?.id)}
+        renderInput={(params) => <TextField {...params} size={'small'} label="User" />}
       />
-      <TextField
-        size={'small'}
-        label={'Amount'}
-        fullWidth
-        value={data.amount}
-        onChange={e => handleActions('amount', e.target.value)}
-      />
-      <LocalizationProvider dateAdapter={AdapterDayjs}>
-        <MobileDateRangePicker
-          localeText={{ start: 'Start Time', end: 'End Time' }}
-          format={'DD/MM/YYYY'}
-          value={[dayjs(data.startDateTime || new Date()), dayjs(data.endDateTime || new Date())]}
-          onChange={([startDateTime, endDateTime]) => (handleActions('startDateTime', startDateTime?.$d.toISOString()), handleActions('endDateTime', endDateTime?.$d.toISOString()))}
-        />
-      </LocalizationProvider>
     </Stack>
   }
 
-  if (dialogType === 'remove_coupon') {
+  if (dialogType === 'remove_couponUser') {
     return <Box>
-      <Typography>{`Are you sure you want to remove this Coupon?`}</Typography>
-      <Typography>{`Code: ${data.code}, amount: ${data.amount}`}</Typography>
+      <Typography>{`Are you sure you want to remove this User from the Coupon?`}</Typography>
+      <Typography>{`- Username: ${users?.find(user => user.id === item.userId)?.userName}`}</Typography>
+      <Typography>{`- Email: ${users?.find(user => user.id === item.userId)?.email}`}</Typography>
     </Box>
   }
   return null;
 }
 
 const Page = () => {
-  const [trigger, {data, error, isLoading, isFetching}] = useLazyListCouponsQuery()
-  const [createCoupon, {isLoading: isCreatingCoupon}] = useCreateCouponMutation()
-  const [updateCoupon, {isLoading: isUpdatingCoupon}] = useEditCouponMutation()
-  const [removeCoupon, {isLoading: isRemovingCoupon}] = useRemoveCouponMutation()
-  const isPageLoading = isFetching || isCreatingCoupon || isUpdatingCoupon || isRemovingCoupon
+  const [trigger, {data, error, isLoading, isFetching}] = useLazyListCouponUsersQuery()
+  const [addCouponUser, {isLoading: isCreatingCouponUser}] = useAddCouponUserMutation()
+  const [removeCouponUser, {isLoading: isRemovingCouponUser}] = useRemoveCouponUserMutation()
+  const {data: usersData, error: usersError, isFetching: isFetchingUsers} = useListUsersQuery()
+  const isPageLoading = isFetching || isCreatingCouponUser || isRemovingCouponUser
+
+  const router = useRouter()
+  const {id} = router.query;
+  console.log(id);
 
   let tableConfig = useTable({
     getPageItems: (query) => {
-      trigger(query).unwrap()
+      trigger({...query, couponId: id}).unwrap()
     },
     pageItemsResult: data ? {items: data.items, pagination: {count: data.pagination?.totalCount}} : null
   });
 
-  const title = 'Coupons';
+  const title = 'Eligible Users';
   const [dialogState, setDialogState] = useState({
     dialogType: '',
     title: '',
@@ -106,27 +114,24 @@ const Page = () => {
 
   const disableSubmitting = () => {
     const {dialogType, data} = dialogState
-    if (dialogType === 'add_coupon' || dialogType === 'edit_coupon') {
-      return !data.code
+    if (dialogType === 'add_couponUser') {
+      return !data.userId
     }
     return false;
   }
 
   const handleActions = (actionType, data) => {
-    console.log(actionType, data);
-    if (actionType === 'add_coupon') {
-      handleOpenDialog(actionType, 'Add Coupon', data)
-    } else if (actionType === 'edit_coupon') {
-      handleOpenDialog(actionType, 'Edit Coupon', data)
-    } else if (actionType === 'remove_coupon') {
+    if (actionType === 'add_couponUser') {
+      handleOpenDialog(actionType, 'Add User', data)
+    } else if (actionType === 'remove_couponUser') {
       handleOpenDialog(actionType, 'We Remind You', data)
+    } else if (actionType === 'back') {
+      router.back()
     } else if (actionType === 'submit') {
-      if (dialogState.dialogType === 'add_coupon') {
-        createCoupon(data).then(result => dialogConfig.onClose())
-      } else if (dialogState.dialogType === 'edit_coupon') {
-        updateCoupon(data).then(result => dialogConfig.onClose())
-      } else if (dialogState.dialogType === 'remove_coupon') {
-        removeCoupon(data).then(result => dialogConfig.onClose())
+      if (dialogState.dialogType === 'add_couponUser') {
+        addCouponUser({couponId: data.couponId, userId: data.userId}).then(result => dialogConfig.onClose())
+      } else if (dialogState.dialogType === 'remove_couponUser') {
+        removeCouponUser(data.item).then(result => dialogConfig.onClose())
       }
     } else if (actionType === 'cancel') {
       dialogConfig.onClose();
@@ -160,6 +165,15 @@ const Page = () => {
           <CircularProgress color="inherit" />
         </Backdrop>
         <Container maxWidth="xl">
+          <Button
+            startIcon={(
+              <SvgIcon><ChevronLeftIcon/></SvgIcon>
+            )}
+            sx={{mb: 1}}
+            onClick={() => handleActions('back')}
+          >
+            Back
+          </Button>
           <Stack spacing={3}>
             <Stack
               direction="row"
@@ -197,7 +211,7 @@ const Page = () => {
               </Stack>
               <div>
                 <Button
-                  onClick={() => handleActions('add_coupon', {code: '', amount: 0, startDateTime: null, endDateTime: null})}
+                  onClick={() => handleActions('add_couponUser', {couponId: id, item: {}, users: usersData?.items})}
                   startIcon={(
                     <SvgIcon fontSize="small">
                       <PlusIcon />
@@ -214,50 +228,22 @@ const Page = () => {
               {...tableConfig}
               columns={[
                 {
-                  field: 'code',
-                  label: 'Code'
+                  label: 'Username',
+                  render: (item) => usersData.items?.find(user => user.id === item.userId)?.userName
                 },
                 {
-                  field: 'amount',
-                  label: 'Amount'
+                  label: 'Email',
+                  render: (item) => usersData.items?.find(user => user.id === item.userId)?.email
                 },
-                {
-                  field: 'startDateTime',
-                  label: 'Start Time',
-                  render: (item) => <>{item?.startDateTime && format(new Date(item.startDateTime), 'dd/MM/yyyy')}</>
-                },
-                {
-                  field: 'createDateTime',
-                  label: 'End Time',
-                  render: (item) => <>{item?.endDateTime && format(new Date(item.endDateTime), 'dd/MM/yyyy')}</>
-                },
-                {
-                  label: 'Status',
-                  render: (item) => {
-                    const now = new Date();
-                    if (new Date(item.startDateTime) <= now && now <= new Date(item.endDateTime)) {
-                      return <Chip color={'success'} label={'Active'}/>
-                    }
-                    return <Chip color={'error'} label={'Inactive'}/>
-                  }
-                }
               ]}
               options={{
                 sortable: true
               }}
               actions={[
                 {
-                  title: 'Edit Coupon',
-                  children: <SvgIcon><PencilSquareIcon/></SvgIcon>,
-                  onClick: (item) => handleActions('edit_coupon', item),
-                  props: {
-                    color: 'success'
-                  }
-                },
-                {
-                  title: 'Remove Coupon',
+                  title: 'Remove User',
                   children: <SvgIcon><TrashIcon/></SvgIcon>,
-                  onClick: (item) => handleActions('remove_coupon', item),
+                  onClick: (item) => handleActions('remove_couponUser', {item: item, users: usersData.items}),
                   props: {
                     color: 'error'
                   }

@@ -1,9 +1,9 @@
 import { apiSlice } from './apiSlice';
 
-const couponApiBaseURL = '/Coupons'
+const couponApiBaseURL = '/Coupons';
 export const couponApiSlice =
   apiSlice
-    .enhanceEndpoints({addTagTypes: ['Coupons']})
+    .enhanceEndpoints({ addTagTypes: ['Coupons', 'CouponUsers'] })
     .injectEndpoints({
       endpoints: (builder) => ({
         listCoupons: builder.query({
@@ -42,8 +42,47 @@ export const couponApiSlice =
             method: 'delete'
           }),
           invalidatesTags: ['Coupons']
+        }),
+        listCouponUsers: builder.query({
+          query: ({
+            page,
+            rowsPerPage,
+            order,
+            orderBy,
+            couponId,
+          }) => ({
+            url: `${couponApiBaseURL}/Management/${couponId}/users?${new URLSearchParams({
+              pageNumber: page + 1,
+              pageSize: rowsPerPage
+            }).toString()}`, method: 'get'
+          }),
+          providesTags: ['CouponUsers']
+        }),
+        addCouponUser: builder.mutation({
+          query: (payload) => ({
+            url: `${couponApiBaseURL}/Management/users`,
+            method: 'post',
+            data: payload
+          }),
+          invalidatesTags: ['CouponUsers']
+        }),
+        removeCouponUser: builder.mutation({
+          query: (payload) => ({
+            url: `${couponApiBaseURL}/Management/users?couponId=${payload.couponId}&userId=${payload.userId}`,
+            method: 'delete'
+          }),
+          invalidatesTags: ['CouponUsers']
         })
       })
-    })
+    });
 
-export const {useListCouponsQuery, useLazyListCouponsQuery, useCreateCouponMutation, useEditCouponMutation, useRemoveCouponMutation} = couponApiSlice
+export const {
+  useListCouponsQuery,
+  useLazyListCouponsQuery,
+  useCreateCouponMutation,
+  useEditCouponMutation,
+  useRemoveCouponMutation,
+  useLazyListCouponUsersQuery,
+  useAddCouponUserMutation,
+  useRemoveCouponUserMutation
+} = couponApiSlice;

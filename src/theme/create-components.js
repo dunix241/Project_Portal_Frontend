@@ -225,6 +225,15 @@ export function createComponents(config) {
         }
       }
     },
+    MuiFormControl: {
+      styleOverrides: {
+        root: {
+          [`& .${outlinedInputClasses.notchedOutline}`]: {
+            boxShadow: 'unset !important',
+          }
+        },
+      }
+    },
     MuiFormLabel: {
       styleOverrides: {
         root: {
