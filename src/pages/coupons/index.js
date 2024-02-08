@@ -33,6 +33,7 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { MobileDateRangePicker } from 'src/libs/x-date-pickers-pro/MobileDateRangePicker';
 import dayjs from 'dayjs';
 import { redirect, useRouter } from 'next/navigation';
+import { SeverityPill } from '../../components/severity-pill';
 
 const DialogContent = (props) => {
   const {dialogType, data, handleActions} = props;
@@ -241,9 +242,9 @@ const Page = () => {
                   render: (item) => {
                     const now = new Date();
                     if (new Date(item.startDateTime) <= now && now <= new Date(item.endDateTime)) {
-                      return <Chip color={'success'} label={'Active'}/>
+                      return <SeverityPill color={'success'}>Active</SeverityPill>
                     }
-                    return <Chip color={'error'} label={'Inactive'}/>
+                    return <SeverityPill color={'error'}>Inactive</SeverityPill>
                   }
                 }
               ]}
