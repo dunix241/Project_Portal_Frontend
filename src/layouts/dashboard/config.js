@@ -8,7 +8,7 @@ import UsersIcon from '@heroicons/react/24/solid/UsersIcon';
 import XCircleIcon from '@heroicons/react/24/solid/XCircleIcon';
 import {SvgIcon} from '@mui/material';
 import {BookOpenIcon} from "@heroicons/react/20/solid";
-import {ShoppingCartIcon} from "@heroicons/react/24/solid";
+import { ReceiptPercentIcon, ShoppingCartIcon } from '@heroicons/react/24/solid';
 
 export const items = [
   {
@@ -34,7 +34,7 @@ export const items = [
     path: '/products',
     icon: (
       <SvgIcon fontSize="small">
-        <UsersIcon/>
+        <ShoppingBagIcon/>
       </SvgIcon>
     )
   },
@@ -53,6 +53,15 @@ export const items = [
     icon: (
       <SvgIcon fontSize="small">
         <ShoppingCartIcon/>
+      </SvgIcon>
+    )
+  },
+  {
+    title: 'Coupons',
+    path: '/coupons',
+    icon: (
+      <SvgIcon fontSize="small">
+        <ReceiptPercentIcon/>
       </SvgIcon>
     )
   },
