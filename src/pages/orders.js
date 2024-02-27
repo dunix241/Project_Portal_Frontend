@@ -22,6 +22,14 @@ import {PencilSquareIcon} from '@heroicons/react/24/outline';
 import {EDialog} from '../components/dialog';
 import {useDialog} from '../hooks/use-dialog';
 import {styled} from "@mui/material/styles";
+import {
+  useCreateOrderMutation,
+  useEditOrderMutation, useLazyListOrderDetailsQuery,
+  useLazyListOrdersQuery, useListOrdersQuery,
+} from "../agent/orderApiSlice";
+import PlusIcon from "@heroicons/react/24/solid/PlusIcon";
+import {status} from "nprogress";
+import {SeverityPill} from "../components/severity-pill";
 
 const now = new Date();
 
@@ -45,7 +53,8 @@ const DialogContent = (props) => {
         <Select
           labelId="demo-simple-select-label"
           id="demo-simple-select"
-          value={statuses[0]}
+          value={data.status}
+          onChange={(event)=> handleActions('status', event.target.value)}
           label="Status"
         >
           {
@@ -59,7 +68,20 @@ const DialogContent = (props) => {
 }
 
 const Page = () => {
-  const tableConfig = useTable({data});
+  const [trigger, {data, error, isLoading, isFetching}] = useLazyListOrdersQuery()
+  const [createOrder, {isLoading: isCreatingOrder}] = useCreateOrderMutation()
+  const [updateOrder, {isLoading: isUpdatingOrder}] = useEditOrderMutation()
+  const {data: orderDetailsData, error: orderDetailsError, isFetching: isFetchingOrderDetails} = useLazyListOrderDetailsQuery()
+  const isPageLoading = isFetching || isCreatingOrder || isUpdatingOrder
+  const {data: orders, isLoading: isOrdersLoading, isOrdersFetching} = useListOrdersQuery()
+  console.log(orders)
+
+  let tableConfig = useTable({
+    getPageItems: (query) => {
+      trigger(query).unwrap()
+    },
+    pageItemsResult: data ? {items: data.items, pagination: {count: data.pagination?.totalCount}} : null
+  });
   const title = 'Orders';
   const [dialogState, setDialogState] = useState({
     dialogType: '',
@@ -81,9 +103,9 @@ const Page = () => {
 
   const disableSubmitting = () => {
     const {dialogType, data} = dialogState
-    if (dialogType === 'edit_order') {
-      return !data.name || !data.email || !data.phone
-    }
+    // if (dialogType === 'edit_order') {
+    //   return !data.name || !data.email || !data.phone
+    // }
     return false;
   }
 
@@ -91,8 +113,10 @@ const Page = () => {
     if (actionType === 'edit_order') {
       handleOpenDialog(actionType, 'Edit Order', data)
     } else if (actionType === 'submit') {
-      console.log('submitting');
-      dialogConfig.onClose();
+      console.log('submitting', data);
+      if (dialogState.dialogType === 'edit_order') {
+          updateOrder(data).then(result => dialogConfig.onClose())
+      }
     } else if (actionType === 'cancel') {
       dialogConfig.onClose();
     } else {
@@ -157,7 +181,7 @@ const Page = () => {
             </Stack>
             <CustomersSearch />
             <ETable
-              count={data.length}
+              count={data?.length}
               {...tableConfig}
               columns={[
                 {
@@ -170,7 +194,7 @@ const Page = () => {
                 },
                 {
                   field: 'address',
-                  label: 'Location',
+                  label: 'Address',
                 },
                 {
                   field: 'phoneNumber',
@@ -180,19 +204,38 @@ const Page = () => {
                   field: 'note',
                   label: 'Note'
                 },
+                {
+                  label: 'Status',
+                  render: (data) => {
+                    console.log(data.status)
+                    if (data.status === 'Preparing') {
+                      return <SeverityPill color={'success'}>Preparing</SeverityPill>
+                    } else if (data.status === 'Delivering')
+                    return <SeverityPill sx={{color: '#4338CA'}}>Delivering</SeverityPill>
+                    else if (data.status === 'Delivered')
+                      return <SeverityPill sx={{color: '#2F3746'}}>Delivered</SeverityPill>
+                    else if (data.status === 'Cancelled')
+                      return <SeverityPill color={'error'}>Cancelled</SeverityPill>
+                  }
+                }
               ]}
               actions={[
                 {
-                  title: 'Edit order',
+                  title: 'Edit Order',
                   children: <SvgIcon><PencilSquareIcon/></SvgIcon>,
-                  onClick: (item) => handleActions('edit_order', item),
+                  onClick: (item) => {
+                    handleActions('edit_order', item)
+                  },
                 },
               ]}
               options={{
                 sortable: true,
                 collapsible: {
                   title: 'Show order details',
-                  renderCollapsibleRow: (item) => <>item.orderDetails</>,
+                  renderCollapsibleRow: (item) => {
+
+                    return <></>
+                  },
                 }
               }}
             />
@@ -204,7 +247,7 @@ const Page = () => {
         {...dialogConfig}
         renderActions={() => dialogConfig.renderDefaultActions({
           disableSubmitting: disableSubmitting(),
-          onSubmit: () => handleActions('submit'),
+          onSubmit: () => handleActions('submit', dialogState.data),
           onCancel: () => handleActions('cancel'),
         })}
         fullWidth

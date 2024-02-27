@@ -8,7 +8,7 @@ export const orderApiSlice =
       endpoints: (builder) => ({
         listOrders: builder.query({
           query: () => ({
-            url: `${orderApiBaseURL}`, method: 'get'
+            url: `${orderApiBaseURL}/Management`, method: 'get'
           }),
           providesTags: ['Orders']
         }),
@@ -22,7 +22,7 @@ export const orderApiSlice =
         }),
         editOrder: builder.mutation({
           query: (payload) => ({
-            url: `${orderApiBaseURL}/Management/${payload.id}`,
+            url: `${orderApiBaseURL}/${payload.id}`,
             method: 'put',
             data: payload
           }),
@@ -38,4 +38,4 @@ export const orderApiSlice =
       })
     })
 
-export const {useListOrdersQuery, useLazyListOrdersQuery, useCreateOrderMutation, useEditOrderMutation, useRemoveOrderMutation} = orderApiSlice
+export const {useListOrdersQuery, useLazyListOrdersQuery, useCreateOrderMutation, useEditOrderMutation, useLazyListOrderDetailsQuery} = orderApiSlice
