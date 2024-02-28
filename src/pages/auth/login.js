@@ -1,14 +1,7 @@
-import { useCallback, useState } from 'react';
 import Head from 'next/head';
 import NextLink from 'next/link';
-import { useRouter } from 'next/navigation';
-import { useFormik } from 'formik';
-import * as Yup from 'yup';
 import {
-  Alert,
-  Box,
-  Button,
-  FormHelperText,
+  Box, Button,
   Link,
   Stack,
   Tab,
@@ -16,41 +9,37 @@ import {
   TextField,
   Typography
 } from '@mui/material';
-import { useAuth } from 'src/hooks/use-auth';
 import { Layout as AuthLayout } from 'src/layouts/auth/layout';
+import { useDispatch, useSelector } from 'react-redux';
+import React, {useCallback, useState} from 'react';
+import {Controller, useForm} from "react-hook-form";
+import { LoadingButton } from '@mui/lab';
+import {useAppDispatch, useAppSelector} from "../../store/hooks";
+import {setCredentials} from "../../store/authSlice";
+import {useLoginMutation} from "../../agent/authApiSlice";
 
 const Page = () => {
-  const router = useRouter();
-  const auth = useAuth();
+  let dispatch = useAppDispatch();
+  // const {isLoading, hasError} = useAppSelector(store => store.user)
   const [method, setMethod] = useState('email');
-  const formik = useFormik({
-    initialValues: {
-      email: 'demo@devias.io',
-      password: 'Password123!',
-      submit: null
-    },
-    validationSchema: Yup.object({
-      email: Yup
-        .string()
-        .email('Must be a valid email')
-        .max(255)
-        .required('Email is required'),
-      password: Yup
-        .string()
-        .max(255)
-        .required('Password is required')
-    }),
-    onSubmit: async (values, helpers) => {
-      try {
-        await auth.signIn(values.email, values.password);
-        router.push('/');
-      } catch (err) {
-        helpers.setStatus({ success: false });
-        helpers.setErrors({ submit: err.message });
-        helpers.setSubmitting(false);
-      }
+  const {control, handleSubmit} = useForm({
+    defaultValue: {
+      email: '',
+      password: '',
     }
-  });
+    });
+
+  const [formState, setFormState] = React.useState({
+    email: '',
+    password: '',
+  })
+
+  const [login, { isLoading }] = useLoginMutation();
+  //
+  // const onSubmit = (data) => {
+  //   console.log(data)
+  //   // dispatch(login(data))
+  // };
 
   const handleMethodChange = useCallback(
     (event, value) => {
@@ -58,20 +47,11 @@ const Page = () => {
     },
     []
   );
-
-  const handleSkip = useCallback(
-    () => {
-      auth.skip();
-      router.push('/');
-    },
-    [auth, router]
-  );
-
   return (
     <>
       <Head>
         <title>
-          Login | Devias Kit
+          Login
         </title>
       </Head>
       <Box
@@ -124,92 +104,45 @@ const Page = () => {
                 label="Email"
                 value="email"
               />
-              <Tab
-                label="Phone Number"
-                value="phoneNumber"
-              />
             </Tabs>
             {method === 'email' && (
-              <form
-                noValidate
-                onSubmit={formik.handleSubmit}
-              >
+              <form>
+
                 <Stack spacing={3}>
-                  <TextField
-                    error={!!(formik.touched.email && formik.errors.email)}
-                    fullWidth
-                    helperText={formik.touched.email && formik.errors.email}
-                    label="Email Address"
-                    name="email"
-                    onBlur={formik.handleBlur}
-                    onChange={formik.handleChange}
-                    type="email"
-                    value={formik.values.email}
+                  <Controller
+                    name='email'
+                    control={control}
+                    render={({ field }) => (
+                      <TextField type={'email'} {...field} label="Email"/>
+                    )}
                   />
-                  <TextField
-                    error={!!(formik.touched.password && formik.errors.password)}
-                    fullWidth
-                    helperText={formik.touched.password && formik.errors.password}
-                    label="Password"
-                    name="password"
-                    onBlur={formik.handleBlur}
-                    onChange={formik.handleChange}
-                    type="password"
-                    value={formik.values.password}
+
+                  <Controller
+                    name='password'
+                    control={control}
+                    render={({ field }) => (
+                      <TextField type={'password'} {...field} label="Password"/>
+                    )}
                   />
                 </Stack>
-                <FormHelperText sx={{ mt: 1 }}>
-                  Optionally you can skip.
-                </FormHelperText>
-                {formik.errors.submit && (
-                  <Typography
-                    color="error"
-                    sx={{ mt: 3 }}
-                    variant="body2"
-                  >
-                    {formik.errors.submit}
-                  </Typography>
-                )}
+
                 <Button
                   fullWidth
                   size="large"
                   sx={{ mt: 3 }}
                   type="submit"
                   variant="contained"
+                  onClick={async () => {
+                      const user = await login(formState).unwrap()
+                      dispatch(setCredentials(user))
+                      navigate('/')
+                    }
+                  }
+                  isLoading={isLoading}
                 >
                   Continue
                 </Button>
-                <Button
-                  fullWidth
-                  size="large"
-                  sx={{ mt: 3 }}
-                  onClick={handleSkip}
-                >
-                  Skip authentication
-                </Button>
-                <Alert
-                  color="primary"
-                  severity="info"
-                  sx={{ mt: 3 }}
-                >
-                  <div>
-                    You can use <b>demo@devias.io</b> and password <b>Password123!</b>
-                  </div>
-                </Alert>
               </form>
-            )}
-            {method === 'phoneNumber' && (
-              <div>
-                <Typography
-                  sx={{ mb: 1 }}
-                  variant="h6"
-                >
-                  Not available in the demo
-                </Typography>
-                <Typography color="text.secondary">
-                  To prevent unnecessary costs we disabled this feature in the demo.
-                </Typography>
-              </div>
             )}
           </div>
         </Box>

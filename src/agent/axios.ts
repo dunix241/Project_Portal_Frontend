@@ -1,5 +1,6 @@
 import { BaseQueryFn } from '@reduxjs/toolkit/query';
 import axios, { AxiosError, AxiosRequestConfig } from 'axios';
+import {RootState} from "../store";
 
 type RequestOptions = {
   url: string
@@ -12,6 +13,11 @@ type RequestOptions = {
 export const axiosBaseQuery =
   ({ baseUrl }: { baseUrl: string } = { baseUrl: '' }): BaseQueryFn<RequestOptions, unknown, unknown> =>
 async ({ url, method, data, params, headers }, {getState}) => {
+  const token = (getState() as RootState).auth.token
+  if (token) {
+    headers = {...headers, 'authorization': `Bearer ${token}`};
+  }
+
   try {
     const result = await axios({
       url: baseUrl + url,
