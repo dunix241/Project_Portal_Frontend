@@ -10,17 +10,18 @@ import {
   Typography
 } from '@mui/material';
 import { Layout as AuthLayout } from 'src/layouts/auth/layout';
-import { useDispatch, useSelector } from 'react-redux';
 import React, {useCallback, useState} from 'react';
 import {Controller, useForm} from "react-hook-form";
-import { LoadingButton } from '@mui/lab';
 import {useAppDispatch, useAppSelector} from "../../store/hooks";
 import {setCredentials} from "../../store/authSlice";
 import {useLoginMutation} from "../../agent/authApiSlice";
+import {useRouter } from 'next/router';
+import {useAuth} from "../../hooks/use-auth";
 
 const Page = () => {
   let dispatch = useAppDispatch();
-  // const {isLoading, hasError} = useAppSelector(store => store.user)
+  const auth = useAuth();
+  const router = useRouter();
   const [method, setMethod] = useState('email');
   const {control, handleSubmit} = useForm({
     defaultValue: {
@@ -29,13 +30,19 @@ const Page = () => {
     }
     });
 
-  const [formState, setFormState] = React.useState({
-    email: '',
-    password: '',
-  })
+  const onClick = (credentials) => {
+    login(credentials).unwrap()
+    .then(user => {
+      console.log(user);
+      dispatch(setCredentials(user));
+      auth.skip();
+    }).then(() => router.push('/'))
+  };
+  const usr = useAppSelector(store => store.auth)
+  console.log(usr);
 
-  const [login, { isLoading }] = useLoginMutation();
-  //
+  const [login, { isLoading, error }] = useLoginMutation();
+  console.log(error);
   // const onSubmit = (data) => {
   //   console.log(data)
   //   // dispatch(login(data))
@@ -124,6 +131,7 @@ const Page = () => {
                       <TextField type={'password'} {...field} label="Password"/>
                     )}
                   />
+                  {error && <Typography>Error</Typography>}
                 </Stack>
 
                 <Button
@@ -132,12 +140,7 @@ const Page = () => {
                   sx={{ mt: 3 }}
                   type="submit"
                   variant="contained"
-                  onClick={async () => {
-                      const user = await login(formState).unwrap()
-                      dispatch(setCredentials(user))
-                      navigate('/')
-                    }
-                  }
+                  onClick={handleSubmit(onClick)}
                   isLoading={isLoading}
                 >
                   Continue
