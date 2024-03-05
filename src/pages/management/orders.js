@@ -16,20 +16,20 @@ import {
 } from '@mui/material';
 import {Layout as DashboardLayout} from 'src/layouts/dashboard/layout';
 import {CustomersSearch} from 'src/sections/customer/customers-search';
-import {ETable} from '../components/table';
-import {useTable} from '../hooks/table/use-table';
+import {ETable} from '../../components/table';
+import {useTable} from '../../hooks/table/use-table';
 import {PencilSquareIcon} from '@heroicons/react/24/outline';
-import {EDialog} from '../components/dialog';
-import {useDialog} from '../hooks/use-dialog';
+import {EDialog} from '../../components/dialog';
+import {useDialog} from '../../hooks/use-dialog';
 import {styled} from "@mui/material/styles";
 import {
   useCreateOrderMutation,
   useEditOrderMutation, useLazyListOrderDetailsQuery,
   useLazyListOrdersQuery, useListOrdersQuery,
-} from "../agent/orderApiSlice";
+} from "../../agent/orderApiSlice";
 import PlusIcon from "@heroicons/react/24/solid/PlusIcon";
 import {status} from "nprogress";
-import {SeverityPill} from "../components/severity-pill";
+import {SeverityPill} from "../../components/severity-pill";
 
 const now = new Date();
 

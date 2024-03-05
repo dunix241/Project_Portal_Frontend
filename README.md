@@ -85,7 +85,7 @@ material-kit-react
 		├── companies.js
 		├── customers.js
 		├── index.js
-		├── products.js
+		├── index.js
 		└── settings.js
 		└──  auth
 			├── login.js

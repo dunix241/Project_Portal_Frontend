@@ -7,17 +7,17 @@ import PlusIcon from '@heroicons/react/24/solid/PlusIcon';
 import {Avatar, Box, Button, Container, Stack, SvgIcon, TextField, Typography} from '@mui/material';
 import {Layout as DashboardLayout} from 'src/layouts/dashboard/layout';
 import {CustomersSearch} from 'src/sections/customer/customers-search';
-import {ETable} from '../components/table';
-import {getInitials} from '../utils/get-initials';
-import {useTable} from '../hooks/table/use-table';
+import {ETable} from '../../components/table';
+import {getInitials} from '../../utils/get-initials';
+import {useTable} from '../../hooks/table/use-table';
 import {PencilSquareIcon, TrashIcon} from '@heroicons/react/24/outline';
-import {EDialog} from '../components/dialog';
-import {useDialog} from '../hooks/use-dialog';
+import {EDialog} from '../../components/dialog';
+import {useDialog} from '../../hooks/use-dialog';
 import {
   useCreateCategoryMutation,
   useEditCategoryMutation,
   useLazyListCategoriesQuery, useListCategoriesQuery, useRemoveCategoryMutation
-} from "../agent/categoryApiSlice";
+} from "../../agent/categoryApiSlice";
 
 const now = new Date();
 

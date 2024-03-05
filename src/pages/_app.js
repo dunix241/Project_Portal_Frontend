@@ -9,6 +9,7 @@ import { useNProgress } from 'src/hooks/use-nprogress';
 import { createTheme } from 'src/theme';
 import { createEmotionCache } from 'src/utils/create-emotion-cache';
 import 'simplebar-react/dist/simplebar.min.css';
+import StoreProvider from "../store/StoreProvider";
 
 const clientSideEmotionCache = createEmotionCache();
 
@@ -38,6 +39,7 @@ const App = (props) => {
           <AuthProvider>
             <ThemeProvider theme={theme}>
               <CssBaseline/>
+              <StoreProvider>
               <AuthConsumer>
                 {
                   (auth) => auth.isLoading
@@ -45,6 +47,7 @@ const App = (props) => {
                     : getLayout(<Component {...pageProps} />)
                 }
               </AuthConsumer>
+              </StoreProvider>
             </ThemeProvider>
           </AuthProvider>
         </LocalizationProvider>

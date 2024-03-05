@@ -53,9 +53,7 @@ export const Layout = (props) => {
               <Logo />
             </Box>
           </Box>
-          <StoreProvider>
             {children}
-          </StoreProvider>
         </Grid>
       </Grid>
     </Box>
