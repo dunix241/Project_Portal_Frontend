@@ -13,6 +13,8 @@ type RequestOptions = {
 export const axiosBaseQuery =
   ({ baseUrl }: { baseUrl: string } = { baseUrl: '' }): BaseQueryFn<RequestOptions, unknown, unknown> =>
 async ({ url, method, data, params, headers }, {getState}) => {
+  console.log(getState());
+
   const token = (getState() as RootState).auth.token
   if (token) {
     headers = {...headers, 'authorization': `Bearer ${token}`};

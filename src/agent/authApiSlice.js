@@ -15,10 +15,10 @@ export const authApiSlice =
           invalidatesTags: ['Auth']
         }),
         register: builder.mutation({
-          query: (payload) => ({
+          query: (credentials) => ({
             url: `${authApiBaseURL}/Register`,
             method: 'post',
-            data: payload
+            data: credentials
           }),
           invalidatesTags: ['Auth']
         }),
