@@ -1,153 +1,66 @@
-import {useState} from 'react';
-import Head from 'next/head';
-import ArrowDownOnSquareIcon from '@heroicons/react/24/solid/ArrowDownOnSquareIcon';
-import ArrowUpOnSquareIcon from '@heroicons/react/24/solid/ArrowUpOnSquareIcon';
-import PlusIcon from '@heroicons/react/24/solid/PlusIcon';
-import {Backdrop, Box, Button, CircularProgress, Container, Stack, SvgIcon, TextField, Typography} from '@mui/material';
+import {useEffect, useState} from 'react';
+import {Container, Stack, Typography} from '@mui/material';
 import {Layout as UserLayout} from 'src/layouts/user/layout';
-import {CustomersSearch} from 'src/sections/customer/customers-search';
-import {ETable} from '../components/table';
-import {useTable} from '../hooks/table/use-table';
-import {PencilSquareIcon, TrashIcon} from '@heroicons/react/24/outline';
-import {EDialog} from '../components/dialog';
-import {useDialog} from '../hooks/use-dialog';
-import {
-  useCreateProductMutation,
-  useEditProductMutation,
-  useLazyListProductsQuery,
-  useRemoveProductMutation
-} from '../agent/productApiSlice';
-import {useListCategoriesQuery} from "../agent/categoryApiSlice";
-import {Autocomplete} from "@mui/lab";
-
-const DialogContent = (props) => {
-  const {dialogType, data, handleActions} = props;
-  if (dialogType === 'add_product' || dialogType === 'edit_product') {
-    return <Stack spacing={1}>
-      <TextField
-        size={'small'}
-        label={'Name'}
-        fullWidth
-        value={data.name}
-        onChange={(event) => handleActions('name', event.target.value)}
-      />
-      <TextField
-        size={'small'}
-        label={'Description'}
-        fullWidth
-        value={data.description}
-        onChange={(event) => handleActions('description', event.target.value)}
-      />
-      <TextField
-        size={'small'}
-        label={'Price'}
-        fullWidth
-        value={data.price}
-        onChange={(event) => handleActions('price', event.target.value)}
-      />
-      <TextField
-          size={'small'}
-          label={'Discount'}
-          fullWidth
-          value={data.discount}
-          onChange={(event) => handleActions('discount', event.target.value)}
-      />
-      <TextField
-          size={'small'}
-          label={'Stocks'}
-          fullWidth
-          value={data.stocks}
-          onChange={(event) => handleActions('stocks', event.target.value)}
-      />
-      <Autocomplete
-        options={data.categories || []}
-        value={data.categories.find(category => category.id === data.categoryId) || null}
-        isOptionEqualToValue={(option, value) => option.id === value.id}
-        getOptionLabel={(option) => option.name || ''}
-        onChange={(_, value) => handleActions('categoryId', value?.id)}
-        renderInput={(params) => <TextField {...params} label="Categories" />}
-      />
-    </Stack>
-  }
-
-  if (dialogType === 'remove_product') {
-    return <Box>
-      <Typography>{`Are you sure you want to remove this product?`}</Typography>
-      <Typography>{`${data.name}`}</Typography>
-    </Box>
-  }
-  return null;
-}
+import Head from "next/head";
+import {ProductSort} from "../sections/product/product-sort";
+import ProductFilterSidebar from "../sections/product/product-filter-sidebar";
+import {useDispatch, useSelector} from "react-redux";
+import {useAppDispatch, useAppSelector} from "../store/hooks";
+import {ProductList} from "../sections/product/product-list";
+import {ProductCartWidget} from "../sections/product/product-cart-widget";
+import InfiniteScroll from "react-infinite-scroller";
+import {useLazyListProductsQuery} from "../agent/productApiSlice";
+import { addProduct } from '../store/productsSlice';
 
 const Page = () => {
-  const [trigger, {data, error, isLoading, isFetching}] = useLazyListProductsQuery()
-  const [createProduct, {isLoading: isCreatingProduct}] = useCreateProductMutation()
-  const [updateProduct, {isLoading: isUpdatingProduct}] = useEditProductMutation()
-  const [removeProduct, {isLoading: isRemovingProduct}] = useRemoveProductMutation()
-  const isPageLoading = isFetching || isCreatingProduct || isUpdatingProduct || isRemovingProduct
-  const {data: categories, isLoading: isCategoriesLoading, isCategoriesFetching} = useListCategoriesQuery()
-  console.log(categories)
-
-  let tableConfig = useTable({
-    getPageItems: (query) => {
-      trigger(query).unwrap()
-    },
-    pageItemsResult: data ? {items: data.items, pagination: {count: data.pagination?.totalCount}} : null
-  });
-
   const title = 'Products';
-  const [dialogState, setDialogState] = useState({
-    dialogType: '',
-    title: '',
-    data: {},
-  })
+  const [openFilter, setOpenFilter] = useState(false);
+  const [isLoadingNext, setIsLoadingNext] = useState(false)
+  const {products} = useAppSelector(store => store.products);
+  const dispatch = useAppDispatch();
 
-  const dialogConfig = useDialog();
+  // useEffect(() => {
+  //   setIsLoadingNext(true);
+  //   dispatch(setPagingParams({...initialPagingParams, pageSize: 8}))
+  //   dispatch(resetProducts());
+  //   dispatch(listAccum());
+  //   setIsLoadingNext(false);
+  // }, []);
 
-  const handleOpenDialog = (dialogType, title, data) => {
-    dialogConfig.onOpen();
-    setDialogState(prev => ({
-      ...prev,
-      dialogType,
-      title,
-      data,
-    }))
+  const [trigger, {data, error, isLoading, isFetching}] = useLazyListProductsQuery();
+
+  useEffect(() => {
+    handleGetNext();
+
+  }, []);
+  const handleGetNext = () => {
+    trigger({page:0, rowsPerPage:10})
+      .unwrap()
+      .then(response => {
+        console.log(response);
+        dispatch(addProduct(response.items));
+        console.log(data);
+        }
+  )
+
+    // setIsLoadingNext(true);
+    // dispatch(setPagingParams({pageNumber: pagination.currentPage + 1, pageSize: pagination.pageSize}))
+    // dispatch(listAccum());
+    // setIsLoadingNext(false);
   }
 
-  const disableSubmitting = () => {
-    const {dialogType, data} = dialogState
-    if (dialogType === 'add_product' || dialogType === 'edit_product') {
-      return !data.name
-    }
-    return false;
-  }
+  const hasMore = !isLoadingNext && !isLoading;
+  // const hasMore = !isLoadingNext && !isLoading && !!pagination && pagination.currentPage < pagination.totalPages;
+  const handleOpenFilter = () => {
+    setOpenFilter(true);
+  };
+
+  const handleCloseFilter = () => {
+    setOpenFilter(false);
+  };
 
   const handleActions = (actionType, data) => {
-    if (actionType === 'add_product') {
-      handleOpenDialog(actionType, 'Add Product', data)
-    } else if (actionType === 'edit_product') {
-      handleOpenDialog(actionType, 'Edit Product', data)
-    } else if (actionType === 'remove_product') {
-      handleOpenDialog(actionType, 'We Remind You', data)
-    } else if (actionType === 'submit') {
-      if (dialogState.dialogType === 'add_product') {
-        createProduct(data).then(result => dialogConfig.onClose())
-      } else if (dialogState.dialogType === 'edit_product') {
-        updateProduct(data).then(result => dialogConfig.onClose())
-      } else if (dialogState.dialogType === 'remove_product') {
-        removeProduct(data).then(result => dialogConfig.onClose())
-      }
-    } else if (actionType === 'cancel') {
-      dialogConfig.onClose();
-    } else {
-      setDialogState(prev => ({
-        ...prev,
-        data: {
-          ...prev.data,
-          [actionType]: data
-        }
-      }))
-    }
+
   }
 
   return (
@@ -155,151 +68,33 @@ const Page = () => {
       <Head>
         <title>{title}</title>
       </Head>
-      <Box
-        component="main"
-        sx={{
-          flexGrow: 1,
-          py: 8
-        }}
-      >
-        <Backdrop
-            sx={{ color: '#fff', zIndex: (theme) => 10000 }}
-            open={isPageLoading}
-        >
-          <CircularProgress color="inherit" />
-        </Backdrop>
-        <Container maxWidth="xl">
-          <Stack spacing={3}>
-            <Stack
-              direction="row"
-              justifyContent="space-between"
-              spacing={4}
-            >
-              <Stack spacing={1}>
-                <Typography variant="h4">{title}</Typography>
-                <Stack
-                  alignItems="center"
-                  direction="row"
-                  spacing={1}
-                >
-                  <Button
-                    color="inherit"
-                    startIcon={(
-                      <SvgIcon fontSize="small">
-                        <ArrowUpOnSquareIcon />
-                      </SvgIcon>
-                    )}
-                  >
-                    Import
-                  </Button>
-                  <Button
-                    color="inherit"
-                    startIcon={(
-                      <SvgIcon fontSize="small">
-                        <ArrowDownOnSquareIcon />
-                      </SvgIcon>
-                    )}
-                  >
-                    Export
-                  </Button>
-                </Stack>
-              </Stack>
-              <div>
-                <Button
-                  onClick={() => handleActions('add_product', {name: '', thumbnail: '', description: '', price: 0, discount: 0, stocks: 0, categoryId: null, categories: categories?.categories})}
-                  startIcon={(
-                    <SvgIcon fontSize="small">
-                      <PlusIcon />
-                    </SvgIcon>
-                  )}
-                  variant="contained"
-                >
-                  Add
-                </Button>
-              </div>
-            </Stack>
-            <CustomersSearch />
-            <ETable
-              {...tableConfig}
-              columns={[
-                // {
-                //   field: 'avatar',
-                //   label: 'Avatar',
-                //   render: (item) => {
-                //     return <Stack
-                //       alignItems="center"
-                //       direction="row"
-                //       spacing={2}
-                //     >
-                //       <Avatar src={item.avatar}>
-                //         {getInitials(item.name)}
-                //       </Avatar>
-                //       <Typography variant="subtitle2">
-                //         {item.name}
-                //       </Typography>
-                //     </Stack>;
-                //   }
-                // },
-                {
-                  field: 'name',
-                  label: 'Name'
-                },
-                {
-                  field: 'price',
-                  label: 'Price'
-                },
-                {
-                  field: 'stocks',
-                  label: 'Stocks'
-                },
-                // {
-                //   field: 'createDateTime',
-                //   label: 'Created Time',
-                //   render: (item) => <>{item?.createDateTime && format(item.createDateTime, 'dd/MM/yyyy')}</>
-                // },
-                {
-                  field: 'categoryId',
-                  label: 'Category Name',
-                  render: (item) => categories?.categories.find(cate => cate.id === item.categoryId)?.name
-                },
-              ]}
-              options={{
-                sortable: true
-              }}
-              actions={[
-                {
-                  title: 'Edit Product',
-                  children: <SvgIcon><PencilSquareIcon/></SvgIcon>,
-                  onClick: (item) => handleActions('edit_product', {...item, ...categories}),
-                  props: {
-                    color: 'success'
-                  }
-                },
-                {
-                  title: 'Remove Product',
-                  children: <SvgIcon><TrashIcon/></SvgIcon>,
-                  onClick: (item) => handleActions('remove_product', item),
-                  props: {
-                    color: 'error'
-                  }
-                }
-              ]}
+
+      <Container>
+        <Typography variant="h4" sx={{mb: 5}}>
+          Products
+        </Typography>
+
+        <Stack direction="row" flexWrap="wrap-reverse" alignItems="center" justifyContent="flex-end"
+               sx={{mb: 5}}>
+          <Stack direction="row" spacing={1} flexShrink={0} sx={{my: 1}}>
+            <ProductFilterSidebar
+              openFilter={openFilter}
+              onOpenFilter={handleOpenFilter}
+              onCloseFilter={handleCloseFilter}
             />
+            <ProductSort/>
           </Stack>
-        </Container>
-      </Box>
-      <EDialog
-          title={dialogState.title}
-        {...dialogConfig}
-        renderActions={() => dialogConfig.renderDefaultActions({
-          disableSubmitting: disableSubmitting(),
-          onSubmit: () => handleActions('submit', dialogState.data),
-          onCancel: () => handleActions('cancel', dialogState.data),
-        })}
-        fullWidth
-      >
-        <DialogContent handleActions={handleActions} dialogType={dialogState.dialogType} data={dialogState.data}/>
-      </EDialog>
+        </Stack>
+
+        <InfiniteScroll
+          pageStart={0}
+          hasMore={hasMore}
+          loadMore={handleGetNext}
+          initialLoad={Boolean(false)}
+        >
+          <ProductList products={products}/>
+        </InfiniteScroll>
+      </Container>
     </>
   );
 };

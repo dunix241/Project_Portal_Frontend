@@ -16,24 +16,24 @@ import {
 } from '@mui/material';
 import { Layout as DashboardLayout } from 'src/layouts/dashboard/layout';
 import { CustomersSearch } from 'src/sections/customer/customers-search';
-import { ETable } from '../../components/table';
-import { useTable } from '../../hooks/table/use-table';
+import { ETable } from '../../../components/table';
+import { useTable } from '../../../hooks/table/use-table';
 import { PencilSquareIcon, TrashIcon, UsersIcon } from '@heroicons/react/24/outline';
-import { EDialog } from '../../components/dialog';
-import { useDialog } from '../../hooks/use-dialog';
+import { EDialog } from '../../../components/dialog';
+import { useDialog } from '../../../hooks/use-dialog';
 import { format } from 'date-fns';
 import {
   useCreateCouponMutation,
   useEditCouponMutation,
   useLazyListCouponsQuery,
   useRemoveCouponMutation
-} from '../../agent/couponApiSlice';
+} from '../../../agent/couponApiSlice';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { MobileDateRangePicker } from 'src/libs/x-date-pickers-pro/MobileDateRangePicker';
 import dayjs from 'dayjs';
 import { redirect, useRouter } from 'next/navigation';
-import { SeverityPill } from '../../components/severity-pill';
+import { SeverityPill } from '../../../components/severity-pill';
 
 const DialogContent = (props) => {
   const {dialogType, data, handleActions} = props;

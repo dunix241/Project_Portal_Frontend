@@ -32,7 +32,7 @@ import {
 } from 'src/agent/couponApiSlice';
 import { useRouter } from 'next/router';
 import { Autocomplete } from '@mui/lab';
-import { useListUsersQuery } from '../../../agent/userApiSlice';
+import { useListUsersQuery } from '../../../../agent/userApiSlice';
 
 const DialogContent = (props) => {
   const {dialogType, data, handleActions} = props;
