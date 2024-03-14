@@ -16,16 +16,16 @@ import {useEffect, useState} from "react";
 import {styled} from "@mui/material/styles";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import {useDispatch, useSelector} from "react-redux";
-import {get, setCurrentImage, setQuantity, setSelectedVariations, slideImageRoll} from "../features/productsSlice";
-import {fCurrency} from "../utils/formatNumber";
-import {Icon} from "../components/icon/Icon";
-import CartWidget from "../sections/@dashboard/products/ProductCartWidget";
-import Label from "../components/label";
-import {labelColorMapper} from "../features/mappers/productMapper";
+import {get, setCurrentImage, setQuantity, setSelectedVariations, slideImageRoll} from "../../store/productsSlice";
+import {fCurrency} from "../../utils/format-number";
+import {Icon} from "../../components/icon/icon";
+import { CartWidget } from '../../sections/product/product-cart-widget';
+import Label from "../../components/label";
 import {useRouter} from "next/router";
 import {ChevronLeftIcon} from "@heroicons/react/24/outline";
-import { Layout as DashboardLayout } from '../../../layouts/dashboard/layout';
+import { Layout as DashboardLayout } from '../../layouts/dashboard/layout';
 import Head from "next/head";
+import { useAppSelector } from '../../store/hooks';
 
 const ChevronButton = styled(IconButton)(({theme}) => ({
   width: '40px',
@@ -37,7 +37,7 @@ const ChevronButton = styled(IconButton)(({theme}) => ({
 function Page(props) {
   const router = useRouter()
   const {id} = router.query;
-  const {product, selectedVariations} = useSelector(store => store.products);
+  const {product, selectedVariations} = useAppSelector(store => store.products);
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -307,15 +307,6 @@ function ProductName(props) {
     <Typography variant="h4">
       {name}
     </Typography>
-    {label && <Label
-      variant="filled"
-      color={labelColorMapper(label)}
-      sx={{
-        textTransform: 'uppercase',
-      }}
-    >
-      {label}
-    </Label>}
   </Stack>
 }
 

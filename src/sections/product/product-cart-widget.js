@@ -26,7 +26,7 @@ const StyledRoot = styled('div')(({ theme }) => ({
 
 // ----------------------------------------------------------------------
 
-export const ProductCartWidget = () => (
+export const CartWidget = () => (
     <StyledRoot>
       <Badge showZero badgeContent={0} color="error" max={99}>
         <Icon icon="eva:shopping-cart-fill" width={24} height={24} />
