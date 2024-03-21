@@ -49,7 +49,7 @@ export const ShopProductCard = ({product}) => {
               {label}
             </Label>
           )}
-          <StyledProductImg alt={name} src={img}/>
+          <StyledProductImg alt={name} src={img || '/assets/products/placeholder.png'}/>
         </Box>
 
         <Stack spacing={2} sx={{p: 3}}>

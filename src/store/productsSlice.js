@@ -10,7 +10,8 @@ const slice = createSlice({
   initialState,
   reducers: {
     addProduct: (state, { payload }) => {
-      state.products = [...state.products, ...payload.filter(product => !state.products.includes(product))];
+      const ids = state.products.map(product => product.id)
+      state.products = [...state.products, ...payload.filter(product => !ids.includes(product.id))];
     },
     setPagingParams: (state, {payload}) => {
       console.log(payload)
