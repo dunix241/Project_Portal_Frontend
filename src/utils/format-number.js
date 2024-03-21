@@ -7,19 +7,19 @@ export function fNumber(number) {
 }
 
 export function fCurrency(number) {
-  const format = number ? numeral(number).format('$0,0.00') : '';
+  const format = !isNaN(number) ? numeral(number).format('$0,0.00') : '';
 
   return result(format, '.00');
 }
 
 export function fPercent(number) {
-  const format = number ? numeral(Number(number) / 100).format('0.0%') : '';
+  const format = !isNaN(number) ? numeral(Number(number) / 100).format('0.0%') : '';
 
   return result(format, '.0');
 }
 
 export function fShortenNumber(number) {
-  const format = number ? numeral(number).format('0.00a') : '';
+  const format = !isNaN(number) ? numeral(number).format('0.00a') : '';
 
   return result(format, '.00');
 }

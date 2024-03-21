@@ -6,26 +6,25 @@ import {
   Divider,
   IconButton,
   Input,
+  Paper,
   Rating,
   Stack,
-  ToggleButton,
-  ToggleButtonGroup,
+  SvgIcon,
   Typography
 } from '@mui/material';
-import {useEffect, useState} from "react";
-import {styled} from "@mui/material/styles";
-import useMediaQuery from "@mui/material/useMediaQuery";
-import {useDispatch, useSelector} from "react-redux";
-import {get, setCurrentImage, setQuantity, setSelectedVariations, slideImageRoll} from "../../store/productsSlice";
-import {fCurrency} from "../../utils/format-number";
-import {Icon} from "../../components/icon/icon";
-import { CartWidget } from '../../sections/product/product-cart-widget';
-import Label from "../../components/label";
-import {useRouter} from "next/router";
-import {ChevronLeftIcon} from "@heroicons/react/24/outline";
+import { useEffect, useReducer, useState } from 'react';
+import { styled } from '@mui/material/styles';
+import useMediaQuery from '@mui/material/useMediaQuery';
+import { useDispatch } from 'react-redux';
+import { fCurrency } from '../../utils/format-number';
+import CartWidget from '../../sections/product/product-cart-widget';
+import { useRouter } from 'next/router';
+import { ChevronLeftIcon } from '@heroicons/react/24/outline';
 import { Layout as DashboardLayout } from '../../layouts/dashboard/layout';
-import Head from "next/head";
-import { useAppSelector } from '../../store/hooks';
+import Head from 'next/head';
+import { useGetProductQuery } from '../../agent/productApiSlice';
+import { ChevronRightIcon } from '@heroicons/react/20/solid';
+import { ShoppingCartIcon } from '@heroicons/react/24/solid';
 
 const ChevronButton = styled(IconButton)(({theme}) => ({
   width: '40px',
@@ -34,11 +33,15 @@ const ChevronButton = styled(IconButton)(({theme}) => ({
   top: '50%',
   transform: 'translateY(-50%)',
 }))
-function Page(props) {
+const Page = (props) => {
   const router = useRouter()
   const {id} = router.query;
-  const {product, selectedVariations} = useAppSelector(store => store.products);
+  console.log(router.query.id);
+  const {data: product, isLoading, isSuccess, isError, error} = useGetProductQuery({id});
+  // const {product, selectedVariations} = useGetProductQuery();
   const dispatch = useDispatch();
+  const selectedVariations = []
+  console.log(product);
 
   useEffect(() => {
     // if (product?.id !== id) {
@@ -55,11 +58,13 @@ function Page(props) {
     console.log(selectedVariations)
   }, [selectedVariations])
 
-  const {name, label, discount, quantity, description, price, images, variations} = product
+  if (!product) return null;
+  const {name, label, discount, stocks, description, price, images} = product
 
   console.log(id)
 
-  const largeScreen = useMediaQuery(theme => theme.breakpoints.up('md'));
+  // const largeScreen = useMediaQuery(theme => theme.breakpoints.up('md'));
+  const largeScreen = true;
 
   const imageViewerProps = {
     images,
@@ -73,15 +78,6 @@ function Page(props) {
 
     const [charge, setCharge] = useState(0)
 
-    useEffect(() => {
-      const ans = selectedVariations.reduce(
-        (prev, option) => prev + option ? option.charge : 0,
-        0
-      )
-      console.log(ans)
-      setCharge(ans)
-    }, [selectedVariations])
-
     return <Box {...rootProps}>
       <Typography>
         List price:&nbsp;
@@ -93,7 +89,7 @@ function Page(props) {
             textDecoration: 'line-through',
           }}
         >
-          {fCurrency(price + charge)}
+          {fCurrency(price)}
         </Typography>
       </Typography>
       <Typography>
@@ -109,47 +105,11 @@ function Page(props) {
           &nbsp;
           {fCurrency(discount) || '$0'}
           &nbsp;
-          ({(discount / price * 100).toFixed(2)}%)
+          {price ? `(${(discount / price * 100).toFixed(2)}%)` : ''}
         </Typography>
       </Typography>
     </Box>
   }
-  const Variations = (props) => {
-    const {...rootProps} = props;
-    const handleChange = (e, variation, variationOption) => {
-      dispatch(setSelectedVariations({variation, variationOption}));
-    }
-
-    return (
-      <Stack spacing={1} {...rootProps}>
-        {variations?.map(variation => (
-          <Box key={variation.name}>
-            <Typography>
-              {variation.name}
-            </Typography>
-            <ToggleButtonGroup
-              size='small'
-              exclusive
-              value={selectedVariations?.find(option => variation.variationOptions.includes(option))}
-              color={'primary'}
-              onChange={(e, optionId) => handleChange(e, variation, optionId)}
-            >
-              {variation.variationOptions.map((option, index) => (
-                <ToggleButton
-                  value={option}
-                  key={index}
-                >
-                  {option.name}
-                </ToggleButton>
-              ))}
-            </ToggleButtonGroup>
-          </Box>
-        ))}
-      </Stack>
-    )
-
-  }
-
   return (
     <>
       <Head>
@@ -166,7 +126,7 @@ function Page(props) {
           spacing={3}
           sx={{mb: 5}}
         >
-          {images?.length > 0 && <ImageViewer {...imageViewerProps}/>}
+          <ImageViewer {...imageViewerProps}/>
           <Box sx={{flex: 1}}>
             <ProductName {...{label, name}}/>
             <Stack
@@ -181,18 +141,27 @@ function Page(props) {
             <Divider sx={{mb: 3}}/>
             <Stack spacing={3}>
               <Prices/>
-              <Variations/>
-              <AddToCart quantity={quantity}/>
+              <AddToCart quantity={stocks} product={product}/>
             </Stack>
           </Box>
         </Stack>
-        {description?.split('\n').map((paragraph, index) => (
-          <Typography
-            paragraph
-            sx={{textIndent: '20px', textAlign: 'justify'}}
-            key={index}
-          >{paragraph}</Typography>
-        ))}
+        <Paper
+          sx={{
+            px: 4,
+            py: 2
+          }}
+        >
+          <Typography variant={'h5'} sx={{mb: 2}}>
+            Description
+          </Typography>
+          {description?.split('\n').map((paragraph, index) => (
+            <Typography
+              paragraph
+              sx={{textIndent: '20px', textAlign: 'justify'}}
+              key={index}
+            >{paragraph}</Typography>
+          ))}
+        </Paper>
       </Container>
     </>
   );
@@ -200,17 +169,39 @@ function Page(props) {
 
 function ImageViewer(props) {
   const {...rootProps} = props;
-  const {product: {images, imageRoll}, currentImage} = useSelector(store => store.products);
+
+  const actions = {
+    changeImageRoll: 'changeImageRoll',
+    setCurrentImage: 'setCurrentImage'
+  }
+  const imageReducer = (state, action) => {
+    const {imageRoll, images} = state;
+    const {type, payload} = action;
+
+    if (type === actions.changeImageRoll) {
+      if (imageRoll[0] + payload >= 0 && imageRoll[imageRoll.length - 1] + payload < images.length) {
+        state.imageRoll = imageRoll.map(img => {
+          return {
+            id: img + payload,
+            img: images[img + payload],
+          }
+        });
+      }
+    } else {
+      return {...state, [type]: payload}
+    }
+  }
+  const [imageState, imageDispatch] = useReducer(imageReducer, {
+    images: rootProps.images || ['/assets/products/placeholder.png'],
+    imageRoll: rootProps.images?.map((_, id) => id) ?? [0],
+    currentImage: 0
+  })
+  const {images, imageRoll, currentImage} = imageState;
 
   const [imgState, setImgState] = useState({
     backgroundImage: `url(${images[currentImage]})`,
     backgroundPosition: '0% 0%'
   });
-  const dispatch = useDispatch();
-
-  const changeImageRoll = (val) => {
-    dispatch(slideImageRoll(val));
-  }
 
   useEffect(() => {
     setImgState({
@@ -235,7 +226,7 @@ function ImageViewer(props) {
         position: 'relative'
       }}
     >
-      {imageRoll.map(({img, id}) => <Box
+      {imageRoll.map((img, id) => <Box
           key={id}
           sx={{
             width: '20%',
@@ -243,14 +234,14 @@ function ImageViewer(props) {
             border: id === currentImage ? '2px solid' : 'none',
             borderColor: 'primary.main'
           }}
-          component='img' src={img}
-          onClick={() => dispatch(setCurrentImage(id))}
+          component='img' src={images[img]}
+          onClick={() => imageDispatch({type: actions.setCurrentImage, payload: id})}
         />
       )}
 
       {images.length > imageRoll.length && <ChevronButton
         sx={{left: '10px'}}
-        onClick={() => changeImageRoll(-1)}
+        onClick={() => imageDispatch({type: actions.changeImageRoll, payload: -1})}
       >
         <ChevronLeftIcon
           sx={{color: 'white'}}
@@ -258,9 +249,9 @@ function ImageViewer(props) {
       </ChevronButton>}
       {images.length > imageRoll.length && <ChevronButton
         sx={{right: '10px'}}
-        onClick={() => changeImageRoll(1)}
+        onClick={() => imageDispatch({type: actions.changeImageRoll, payload: 1})}
       >
-        <ChevronLeftIcon
+        <ChevronRightIcon
           sx={{
             transform: 'rotate(180deg)',
             color: 'white'
@@ -287,15 +278,18 @@ function ImageViewer(props) {
             width: '100%',
             '&:hover *': {
               opacity: 0
-            }
+            },
+            border: '1px solid',
           }}
         >
           <Box
-            component='img' src={images[currentImage]}
+            component='img'
+            src={images[currentImage]}
+            sx={{maxWidth: '100%'}}
           />
         </Box>
       </Box>
-      {images.length > 1 && <ImageRoll/>}
+      <ImageRoll/>
     </Stack>
   </>
 }
@@ -311,13 +305,26 @@ function ProductName(props) {
 }
 
 const AddToCart = (props) => {
-  const {...rootProps} = props;
-  const {quantity, product} = useSelector(store => store.products);
-  const dispatch = useDispatch();
-  const largeScreen = useMediaQuery(theme => theme.breakpoints.up('md'));
-  const handleChangeQuantity = (val) => {
-    dispatch(setQuantity(val))
+  const {product, ...rootProps} = props;
+
+  const actions = {
+    changeQuantity: 'changeQuantity'
   }
+  const cartReducer = (state, action) => {
+    const {quantity} = state;
+    const {type, payload} = action;
+    if (type === actions.changeQuantity) {
+      const resultedQuantity = quantity + payload;
+      if (resultedQuantity <= product.stocks && resultedQuantity >= 0) {
+        return {...state, quantity: resultedQuantity}
+      }
+    } else {
+      return {...state, [type]: payload}
+    }
+  }
+  const [cartState, cartDispatch] = useReducer(cartReducer, {quantity: 0})
+  const {quantity} = cartState
+  const largeScreen = useMediaQuery(theme => theme.breakpoints.up('md'));
 
   return <Stack
     {...rootProps}
@@ -341,7 +348,7 @@ const AddToCart = (props) => {
           width: '32px',
           minWidth: '32px',
         }}
-        onClick={() => handleChangeQuantity(-1)}
+        onClick={() => cartDispatch({type: actions.changeQuantity, payload: -1})}
       >-</Button>
       <Input
         value={quantity}
@@ -354,14 +361,14 @@ const AddToCart = (props) => {
         }}
       />
       <Button
-        variant={quantity < product.quantity && 'text' || 'disabled'}
+        variant={quantity < product.stocks && 'text' || 'disabled'}
         size='small'
         sx={{
           height: '32px',
           width: '32px',
           minWidth: '32px',
         }}
-        onClick={() => handleChangeQuantity(1)}
+        onClick={() => cartDispatch({type: actions.changeQuantity, payload: 1})}
       >+</Button>
     </Stack>
 
@@ -375,74 +382,20 @@ const AddToCart = (props) => {
         }
       }}
     >
-      <Icon
+      <SvgIcon
         sx={{
           width: '20px',
           height: '20px',
           marginRight: '10px'
         }}
       >
-        ic_cart
-      </Icon>
+        <ShoppingCartIcon/>
+      </SvgIcon>
       Add to cart
     </Button>
   </Stack>
 }
 
-Page.defaultProps = {
-  product: {
-    name: 'Nike Air Force 1 NDESTRUKT',
-    images: [
-      '/assets/images/products/product_1.jpg',
-      '/assets/images/products/product_2.jpg',
-      '/assets/images/products/product_3.jpg',
-      '/assets/images/products/product_4.jpg',
-      '/assets/images/products/product_5.jpg',
-      '/assets/images/products/product_6.jpg',
-      '/assets/images/products/product_7.jpg',
-    ],
-    price: 64.74,
-    discount: 28.05,
-    quantity: 10,
-    label: {
-      name: 'sale',
-      color: 'error'
-    },
-    description: 'The Air Force 1 NDSTRKT blends unbelievable comfort with head-turning style and street-ready toughness to create an \'indestructible\' feel. In a nod to traditional work boots, the timeless silhouette comes covered in rubber reinforcements in high-wear areas. Lace up for tough conditions with this hardy take on a lifestyle classic.\nIntroduced in 1982, the Air Force 1 redefined basketball footwear from the hardwood to the tarmac. It was the first basketball sneaker to house Nike Air, but its innovative nature has since taken a back seat to its status as a street icon. ',
-    variations: [
-      {
-        name: 'Size',
-        variationOptions: [
-          {
-            name: 'Small',
-            charge: 15
-          },
-          {
-            name: 'Medium',
-            charge: 0
-          },
-          {
-            name: 'Large',
-            charge: 30
-          }
-        ]
-      },
-      {
-        name: 'Color',
-        variationOptions: [
-          {
-            name: 'White',
-            charge: 10
-          },
-          {
-            name: 'Black',
-            charge: 50
-          }
-        ]
-      },
-    ]
-  }
-}
 export default Page
 
 Page.getLayout = (page) => (

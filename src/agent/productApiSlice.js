@@ -3,7 +3,7 @@ import { apiSlice } from './apiSlice';
 const productApiBaseURL = '/Products'
 export const productApiSlice =
   apiSlice
-    .enhanceEndpoints({addTagTypes: ['Products']})
+    .enhanceEndpoints({addTagTypes: ['Product']})
     .injectEndpoints({
       endpoints: (builder) => ({
         listProducts: builder.query({
@@ -18,7 +18,18 @@ export const productApiSlice =
               pageSize: rowsPerPage
             }).toString()}`, method: 'get'
           }),
-          providesTags: ['Products']
+          providesTags: (result = [], error, arg) => ['Product', ...((result?.items || []).map(({id}) => ({type: 'Product', id})))]
+        }),
+        getProduct: builder.query({
+          query: ({id}) => ({
+            url: `${productApiBaseURL}/${id}`,
+            method: 'get'
+          }),
+          providesTags: (result, error, arg) => [{ type: 'Product', id: arg }],
+          transformResponse(baseQueryReturnValue, meta, arg) {
+            console.log(baseQueryReturnValue);
+            return baseQueryReturnValue.product
+          }
         }),
         createProduct: builder.mutation({
           query: (payload) => ({
@@ -26,7 +37,7 @@ export const productApiSlice =
             method: 'post',
             data: payload
           }),
-          invalidatesTags: ['Products']
+          invalidatesTags: ['Product']
         }),
         editProduct: builder.mutation({
           query: (payload) => ({
@@ -34,16 +45,16 @@ export const productApiSlice =
             method: 'put',
             data: payload
           }),
-          invalidatesTags: ['Products']
+          invalidatesTags: (result, error, arg) => [{ type: 'Product', id: arg.id }]
         }),
         removeProduct: builder.mutation({
           query: (payload) => ({
             url: `${productApiBaseURL}/Management/${payload.id}`,
             method: 'delete'
           }),
-          invalidatesTags: ['Products']
+          invalidatesTags: ['Product']
         })
       })
     })
 
-export const {useListProductsQuery, useLazyListProductsQuery, useCreateProductMutation, useEditProductMutation, useRemoveProductMutation} = productApiSlice
+export const {useListProductsQuery, useGetProductQuery, useLazyListProductsQuery, useCreateProductMutation, useEditProductMutation, useRemoveProductMutation} = productApiSlice

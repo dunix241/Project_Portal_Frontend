@@ -17,7 +17,7 @@ import { alpha } from '@mui/material/styles';
 import { usePopover } from 'src/hooks/use-popover';
 import { AccountPopover } from './account-popover';
 import {ShoppingCartIcon} from "@heroicons/react/24/solid";
-import { ProductCartWidget } from '../../sections/product/product-cart-widget';
+import CartWidget from '../../sections/product/product-cart-widget';
 
 const SIDE_NAV_WIDTH = 280;
 const TOP_NAV_HEIGHT = 64;
@@ -80,7 +80,7 @@ export const TopNav = (props) => {
             direction="row"
             spacing={2}
           >
-            <ProductCartWidget/>
+            <CartWidget/>
             <Avatar
               onClick={accountPopover.handleOpen}
               ref={accountPopover.anchorRef}
