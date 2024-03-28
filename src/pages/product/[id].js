@@ -17,10 +17,9 @@ import { styled } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { useDispatch } from 'react-redux';
 import { fCurrency } from '../../utils/format-number';
-import CartWidget from '../../sections/product/product-cart-widget';
 import { useRouter } from 'next/router';
 import { ChevronLeftIcon } from '@heroicons/react/24/outline';
-import { Layout as DashboardLayout } from '../../layouts/dashboard/layout';
+import { Layout as UserLayout } from '../../layouts/user/layout';
 import Head from 'next/head';
 import { useGetProductQuery } from '../../agent/productApiSlice';
 import { ChevronRightIcon } from '@heroicons/react/20/solid';
@@ -117,7 +116,6 @@ const Page = (props) => {
       </Head>
 
       <Container>
-        <CartWidget/>
         <Typography variant="h4" sx={{mb: 5}}>
           Details
         </Typography>
@@ -399,7 +397,7 @@ const AddToCart = (props) => {
 export default Page
 
 Page.getLayout = (page) => (
-  <DashboardLayout>
+  <UserLayout>
     {page}
-  </DashboardLayout>
+  </UserLayout>
 );

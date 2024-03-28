@@ -22,7 +22,7 @@ export const items = [
   },
   {
     title: 'Customers',
-    path: 'management/customers',
+    path: '/management/customers',
     icon: (
       <SvgIcon fontSize="small">
         <UsersIcon/>
@@ -31,7 +31,7 @@ export const items = [
   },
   {
     title: 'Products',
-    path: 'management/products',
+    path: '/management/products',
     icon: (
       <SvgIcon fontSize="small">
         <ShoppingBagIcon/>
@@ -40,7 +40,7 @@ export const items = [
   },
   {
     title: 'Categories',
-    path: 'management/categories',
+    path: '/management/categories',
     icon: (
       <SvgIcon fontSize="small">
         <BookOpenIcon/>
@@ -49,7 +49,7 @@ export const items = [
   },
   {
     title: 'Orders',
-    path: 'management/orders',
+    path: '/management/orders',
     icon: (
       <SvgIcon fontSize="small">
         <ShoppingCartIcon/>
@@ -58,65 +58,65 @@ export const items = [
   },
   {
     title: 'Coupons',
-    path: '/coupons',
+    path: '/management/coupons',
     icon: (
       <SvgIcon fontSize="small">
         <ReceiptPercentIcon/>
       </SvgIcon>
     )
   },
-  {
-    title: 'Companies',
-    path: 'management/companies',
-    icon: (
-      <SvgIcon fontSize="small">
-        <ShoppingBagIcon/>
-      </SvgIcon>
-    )
-  },
-  {
-    title: 'Account',
-    path: 'management/account',
-    icon: (
-      <SvgIcon fontSize="small">
-        <UserIcon/>
-      </SvgIcon>
-    )
-  },
-  {
-    title: 'Settings',
-    path: '/settings',
-    icon: (
-      <SvgIcon fontSize="small">
-        <CogIcon/>
-      </SvgIcon>
-    )
-  },
-  {
-    title: 'Login',
-    path: '/auth/login',
-    icon: (
-      <SvgIcon fontSize="small">
-        <LockClosedIcon/>
-      </SvgIcon>
-    )
-  },
-  {
-    title: 'Register',
-    path: '/auth/register',
-    icon: (
-      <SvgIcon fontSize="small">
-        <UserPlusIcon/>
-      </SvgIcon>
-    )
-  },
-  {
-    title: 'Error',
-    path: '/404',
-    icon: (
-      <SvgIcon fontSize="small">
-        <XCircleIcon/>
-      </SvgIcon>
-    )
-  }
+  // {
+  //   title: 'Companies',
+  //   path: '/management/companies',
+  //   icon: (
+  //     <SvgIcon fontSize="small">
+  //       <ShoppingBagIcon/>
+  //     </SvgIcon>
+  //   )
+  // },
+  // {
+  //   title: 'Account',
+  //   path: '/management/account',
+  //   icon: (
+  //     <SvgIcon fontSize="small">
+  //       <UserIcon/>
+  //     </SvgIcon>
+  //   )
+  // },
+  // {
+  //   title: 'Settings',
+  //   path: '/settings',
+  //   icon: (
+  //     <SvgIcon fontSize="small">
+  //       <CogIcon/>
+  //     </SvgIcon>
+  //   )
+  // },
+  // {
+  //   title: 'Login',
+  //   path: '/auth/login',
+  //   icon: (
+  //     <SvgIcon fontSize="small">
+  //       <LockClosedIcon/>
+  //     </SvgIcon>
+  //   )
+  // },
+  // {
+  //   title: 'Register',
+  //   path: '/auth/register',
+  //   icon: (
+  //     <SvgIcon fontSize="small">
+  //       <UserPlusIcon/>
+  //     </SvgIcon>
+  //   )
+  // },
+  // {
+  //   title: 'Error',
+  //   path: '/404',
+  //   icon: (
+  //     <SvgIcon fontSize="small">
+  //       <XCircleIcon/>
+  //     </SvgIcon>
+  //   )
+  // }
 ];

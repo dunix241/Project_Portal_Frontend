@@ -58,7 +58,7 @@ const DialogContent = (props) => {
           label="Status"
         >
           {
-            statuses.map((status, index) => <MenuItem key={index} value={status}>{status}</MenuItem>)
+            statuses.map((status, index) => <MenuItem disabled={data.initialStatus !== 'Preparing' && status === 'Cancelled'} key={index} value={status}>{status}</MenuItem>)
           }
         </Select>
       </Root>
@@ -224,7 +224,7 @@ const Page = () => {
                   title: 'Edit Order',
                   children: <SvgIcon><PencilSquareIcon/></SvgIcon>,
                   onClick: (item) => {
-                    handleActions('edit_order', item)
+                    handleActions('edit_order', {...item, initialStatus: item.status})
                   },
                 },
               ]}

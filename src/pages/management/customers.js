@@ -371,10 +371,10 @@ const Page = () => {
               ]}
               options={{
                 sortable: true,
-                collapsible: {
-                  title: 'Show order details',
-                  renderCollapsibleRow: (item) => <>item.orderDetails</>,
-                }
+                // collapsible: {
+                //   title: 'Show order details',
+                //   renderCollapsibleRow: (item) => <>item.orderDetails</>,
+                // }
               }}
             />
           </Stack>
