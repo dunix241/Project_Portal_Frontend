@@ -19,6 +19,7 @@ import {
 } from '../../agent/productApiSlice';
 import {useListCategoriesQuery} from "../../agent/categoryApiSlice";
 import {Autocomplete} from "@mui/lab";
+import Editor from '../../components/editor/Editor';
 
 const DialogContent = (props) => {
   const {dialogType, data, handleActions} = props;
@@ -31,6 +32,7 @@ const DialogContent = (props) => {
         value={data.name}
         onChange={(event) => handleActions('name', event.target.value)}
       />
+      <Editor/>
       <TextField
         size={'small'}
         label={'Description'}
