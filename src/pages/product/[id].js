@@ -24,6 +24,11 @@ import Head from 'next/head';
 import { useGetProductQuery } from '../../agent/productApiSlice';
 import { ChevronRightIcon } from '@heroicons/react/20/solid';
 import { ShoppingCartIcon } from '@heroicons/react/24/solid';
+import { Editor } from '../../components/editor';
+import { ContentEditable } from '@lexical/react/LexicalContentEditable';
+import { LexicalComposer } from '@lexical/react/LexicalComposer';
+import { RichTextPlugin } from '@lexical/react/LexicalRichTextPlugin';
+import { isJson } from '../../utils/isJson';
 
 const ChevronButton = styled(IconButton)(({theme}) => ({
   width: '40px',
@@ -152,7 +157,14 @@ const Page = (props) => {
           <Typography variant={'h5'} sx={{mb: 2}}>
             Description
           </Typography>
-          {description?.split('\n').map((paragraph, index) => (
+          {description && isJson(description) && <LexicalComposer initialConfig={{readOnly: true, editorState: description, editable: false}}>
+            <RichTextPlugin
+              contentEditable={
+                <ContentEditable />
+              }
+            />
+          </LexicalComposer>}
+          {!isJson(description) && description?.split('\n').map((paragraph, index) => (
             <Typography
               paragraph
               sx={{textIndent: '20px', textAlign: 'justify'}}

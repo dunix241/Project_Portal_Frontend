@@ -19,7 +19,8 @@ import {
 } from '../../agent/productApiSlice';
 import {useListCategoriesQuery} from "../../agent/categoryApiSlice";
 import {Autocomplete} from "@mui/lab";
-import Editor from '../../components/editor/Editor';
+import {Editor} from "../../components/editor"
+import { isJson } from '../../utils/isJson';
 
 const DialogContent = (props) => {
   const {dialogType, data, handleActions} = props;
@@ -32,14 +33,17 @@ const DialogContent = (props) => {
         value={data.name}
         onChange={(event) => handleActions('name', event.target.value)}
       />
-      <Editor/>
-      <TextField
+      {(isJson(data.description) || !data.description) && <Editor
+        value={data.description || null}
+        onChange={(value) => handleActions('description', value)}
+      />}
+      {!(isJson(data.description) || !data.description) && <TextField
         size={'small'}
         label={'Description'}
         fullWidth
         value={data.description}
         onChange={(event) => handleActions('description', event.target.value)}
-      />
+      />}
       <TextField
         size={'small'}
         label={'Price'}
@@ -208,7 +212,7 @@ const Page = () => {
               </Stack>
               <div>
                 <Button
-                  onClick={() => handleActions('add_product', {name: '', thumbnail: '', description: '', price: 0, discount: 0, stocks: 0, categoryId: null, categories: categories?.categories})}
+                  onClick={() => handleActions('add_product', {name: '', thumbnail: '', description: null, price: 0, discount: 0, stocks: 0, categoryId: null, categories: categories?.categories})}
                   startIcon={(
                     <SvgIcon fontSize="small">
                       <PlusIcon />

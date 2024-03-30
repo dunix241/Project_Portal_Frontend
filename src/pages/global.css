@@ -31,14 +31,14 @@
 
 .editor-container {
     margin: 20px auto 20px auto;
-    border-radius: 2px;
+    border-radius: 8px;
     max-width: 600px;
     color: #000;
     position: relative;
     line-height: 20px;
     font-weight: 400;
     text-align: left;
-    border-top-left-radius: 10px;
+    border: 1px solid #E5E7EB;
     font-family: system-ui, -apple-system, BlinkMacSystemFont, ".SFNSText-Regular", sans-serif;
 }
 
@@ -327,6 +327,7 @@
     border-top-left-radius: 10px;
     border-top-right-radius: 10px;
     vertical-align: middle;
+  overflow: auto;
 }
 
 .toolbar button.toolbar-item {
@@ -496,7 +497,7 @@ i.chevron-down {
 }
 
 .dropdown {
-    z-index: 5;
+    z-index: 20000;
     display: block;
     position: absolute;
     box-shadow: 0 12px 28px 0 rgba(0, 0, 0, 0.2), 0 2px 4px 0 rgba(0, 0, 0, 0.1),
