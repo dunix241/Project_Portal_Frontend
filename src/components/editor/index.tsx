@@ -34,7 +34,7 @@ function Placeholder(props: PlaceholderProps) : ReactNode {
   return <div className="editor-placeholder">{text}</div>;
 }
 
-const editorConfig : InitialConfigType = {
+export const editorConfig : InitialConfigType = {
   // The editor theme
   theme: theme,
   // Handling of errors during update

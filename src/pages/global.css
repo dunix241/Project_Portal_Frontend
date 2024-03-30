@@ -564,7 +564,7 @@ i.chevron-down {
 
 .link-editor {
     position: absolute;
-    z-index: 100;
+    z-index: 20000;
     top: -10000px;
     left: -10000px;
     margin-top: -6px;
