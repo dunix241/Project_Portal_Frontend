@@ -49,7 +49,7 @@ export const cartApiSlice =
         deleteCartDetails: builder.mutation({
           query: (payload) => ({
             url: `${cartApiBaseURL}/Details`,
-            method: 'get',
+            method: 'delete',
             data: payload
           }),
           invalidatesTags: ['CartDetails', 'CartCount']
