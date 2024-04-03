@@ -29,6 +29,9 @@ import { LexicalComposer } from '@lexical/react/LexicalComposer';
 import { RichTextPlugin } from '@lexical/react/LexicalRichTextPlugin';
 import { isJson } from '../../utils/isJson';
 import { editorConfig } from '../../components/editor';
+import { useAddCouponUserMutation } from '../../agent/couponApiSlice';
+import { useAddToCartMutation } from '../../agent/cartApiSlice';
+import { LoadingButton } from '@mui/lab';
 
 const ChevronButton = styled(IconButton)(({theme}) => ({
   width: '40px',
@@ -316,9 +319,11 @@ function ProductName(props) {
 
 const AddToCart = (props) => {
   const {product, ...rootProps} = props;
+  const [addToCart, {isLoading: isAddingToCart}] = useAddToCartMutation()
 
   const actions = {
-    changeQuantity: 'changeQuantity'
+    changeQuantity: 'changeQuantity',
+    addToCart: 'addToCart'
   }
   const cartReducer = (state, action) => {
     const {quantity} = state;
@@ -328,11 +333,15 @@ const AddToCart = (props) => {
       if (resultedQuantity <= product.stocks && resultedQuantity >= 0) {
         return {...state, quantity: resultedQuantity}
       }
+    } else if (type === actions.addToCart) {
+      addToCart({productId: product.id, quantity})
+      return state;
     } else {
       return {...state, [type]: payload}
     }
   }
   const [cartState, cartDispatch] = useReducer(cartReducer, {quantity: 0})
+  console.log(cartState);
   const {quantity} = cartState
   const largeScreen = useMediaQuery(theme => theme.breakpoints.up('md'));
 
@@ -382,7 +391,9 @@ const AddToCart = (props) => {
       >+</Button>
     </Stack>
 
-    <Button
+    <LoadingButton
+      loading={isAddingToCart}
+      loadingPosition={"start"}
       variant={quantity ? 'outlined' : 'disabled'}
       sx={{
         width: '175.8px',
@@ -391,18 +402,21 @@ const AddToCart = (props) => {
           marginInline: largeScreen ? 'none' : 'auto'
         }
       }}
+      onClick={() => cartDispatch({type: actions.addToCart, payload: null})}
+      startIcon={
+        <SvgIcon
+          sx={{
+            width: '20px',
+            height: '20px',
+            marginRight: '10px'
+          }}
+        >
+          <ShoppingCartIcon/>
+        </SvgIcon>
+      }
     >
-      <SvgIcon
-        sx={{
-          width: '20px',
-          height: '20px',
-          marginRight: '10px'
-        }}
-      >
-        <ShoppingCartIcon/>
-      </SvgIcon>
       Add to cart
-    </Button>
+    </LoadingButton>
   </Stack>
 }
 

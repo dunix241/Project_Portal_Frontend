@@ -1,16 +1,28 @@
 import { apiSlice } from './apiSlice';
 
 const cartApiBaseURL = '/Carts'
-export const orderApiSlice =
+export const cartApiSlice =
   apiSlice
-    .enhanceEndpoints({addTagTypes: ['Cart']})
+    .enhanceEndpoints({addTagTypes: ['Cart', 'CartCount', 'CartDetails']})
     .injectEndpoints({
       endpoints: (builder) => ({
         listCartDetails: builder.query({
-          query: () => ({
-            url: `${cartApiBaseURL}/Details`, method: 'get'
+          query: ({
+            page,
+            rowsPerPage,
+            order,
+            orderBy
+          }) => ({
+            url: `${cartApiBaseURL}/Details?${new URLSearchParams({
+              pageNumber: 1,
+              pageSize: 100
+            }).toString()}`,
+            method: 'get'
           }),
-          providesTags: ['CartDetails']
+          providesTags: ['CartDetails'],
+          transformResponse(baseQueryReturnValue, meta, arg) {
+            return baseQueryReturnValue.items
+          }
         }),
         countCartDetails: builder.query({
           query: () => ({
@@ -45,4 +57,4 @@ export const orderApiSlice =
       })
     })
 
-export const {useListOrdersQuery, useLazyListOrdersQuery, useCreateOrderMutation, useEditOrderMutation, useLazyListOrderDetailsQuery} = orderApiSlice
+export const {useLazyListCartDetailsQuery, useListCartDetailsQuery, useCountCartDetailsQuery, useAddToCartMutation, useEditCartDetailsMutation, useDeleteCartDetailsMutation} = cartApiSlice

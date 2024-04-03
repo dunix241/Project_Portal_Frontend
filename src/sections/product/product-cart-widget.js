@@ -3,6 +3,9 @@ import { styled } from '@mui/material/styles';
 import { Badge } from '@mui/material';
 // component
 import {Icon} from "@iconify/react";
+import { useCountCartDetailsQuery } from '../../agent/cartApiSlice';
+import { useListCategoriesQuery } from '../../agent/categoryApiSlice';
+import Link from 'next/link';
 
 // ----------------------------------------------------------------------
 
@@ -26,12 +29,18 @@ const StyledRoot = styled('div')(({ theme }) => ({
 
 // ----------------------------------------------------------------------
 
-const CartWidget = () => (
+const CartWidget = () => {
+  const {data, error, isLoading, isFetching} = useCountCartDetailsQuery()
+
+  return (
     <StyledRoot>
-      <Badge showZero badgeContent={0} color="error" max={99}>
-        <Icon icon="eva:shopping-cart-fill" width={24} height={24} />
-      </Badge>
+      <Link href={"/cart"} sx={{textDecoration: 'none', color: 'black'}}>
+        <Badge showZero badgeContent={data?.count || 0} color="error" max={99}>
+          <Icon icon="eva:shopping-cart-fill" width={24} height={24} />
+        </Badge>
+      </Link>
     </StyledRoot>
-)
+  )
+}
 
 export default CartWidget;
