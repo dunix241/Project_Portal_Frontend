@@ -1,23 +1,22 @@
-import {useState} from 'react';
+import { useState } from 'react';
 import Head from 'next/head';
-import {format, subDays, subHours} from 'date-fns';
 import ArrowDownOnSquareIcon from '@heroicons/react/24/solid/ArrowDownOnSquareIcon';
 import ArrowUpOnSquareIcon from '@heroicons/react/24/solid/ArrowUpOnSquareIcon';
 import PlusIcon from '@heroicons/react/24/solid/PlusIcon';
-import {Avatar, Box, Button, Container, Stack, SvgIcon, TextField, Typography} from '@mui/material';
-import {Layout as DashboardLayout} from 'src/layouts/dashboard/layout';
-import {CustomersSearch} from 'src/sections/customer/customers-search';
-import {ETable} from '../../components/table';
-import {getInitials} from '../../utils/get-initials';
-import {useTable} from '../../hooks/table/use-table';
-import {PencilSquareIcon, TrashIcon} from '@heroicons/react/24/outline';
-import {EDialog} from '../../components/dialog';
-import {useDialog} from '../../hooks/use-dialog';
+import { Box, Button, Container, Stack, SvgIcon, TextField, Typography } from '@mui/material';
+import { Layout as DashboardLayout } from 'src/layouts/dashboard/layout';
+import { Search } from 'src/components/search';
+import { ETable } from '../../components/table';
+import { useTable } from '../../hooks/table/use-table';
+import { PencilSquareIcon, TrashIcon } from '@heroicons/react/24/outline';
+import { EDialog } from '../../components/dialog';
+import { useDialog } from '../../hooks/use-dialog';
 import {
   useCreateCategoryMutation,
   useEditCategoryMutation,
-  useLazyListCategoriesQuery, useListCategoriesQuery, useRemoveCategoryMutation
-} from "../../agent/categoryApiSlice";
+  useListCategoriesQuery,
+  useRemoveCategoryMutation
+} from '../../agent/categoryApiSlice';
 
 const now = new Date();
 
@@ -172,7 +171,7 @@ const Page = () => {
                 </Button>
               </div>
             </Stack>
-            <CustomersSearch />
+            <Search />
             <ETable
               count={data?.length}
               {...tableConfig}

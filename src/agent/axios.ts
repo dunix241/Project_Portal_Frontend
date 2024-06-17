@@ -1,6 +1,7 @@
 import { BaseQueryFn } from '@reduxjs/toolkit/query';
 import axios, { AxiosError, AxiosRequestConfig } from 'axios';
 import {RootState} from "../store";
+import {env} from "../utils/env"
 
 type RequestOptions = {
   url: string
@@ -10,12 +11,17 @@ type RequestOptions = {
   headers?: AxiosRequestConfig['headers']
 }
 
+axios.interceptors.response.use(function (response) {
+  console.log(response);
+  return response;
+}, function (error) {
+  return Promise.reject(error);
+});
+
 export const axiosBaseQuery =
   ({ baseUrl }: { baseUrl: string } = { baseUrl: '' }): BaseQueryFn<RequestOptions, unknown, unknown> =>
 async ({ url, method, data, params, headers }, {getState}) => {
-  console.log(getState());
-
-  const token = (getState() as RootState).auth.token
+  const token = (getState() as RootState).auth.user?.token
   if (token) {
     headers = {...headers, 'authorization': `Bearer ${token}`};
   }
@@ -40,4 +46,9 @@ async ({ url, method, data, params, headers }, {getState}) => {
   }
 }
 
-export const baseUrl = process.env.REACT_APP_API_BASE_URL || 'https://localhost:7275/api'
+export const baseUrl = env.REACT_APP_API_BASE_URL || 'https://localhost:5002/api'
+export const apiVersion = env.REACT_APP_API_VERSION || 'v1'
+export const endpointTypes = {
+  cms: 'cms',
+  pms: 'pms'
+}

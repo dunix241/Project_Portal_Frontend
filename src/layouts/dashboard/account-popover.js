@@ -2,23 +2,22 @@ import { useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import PropTypes from 'prop-types';
 import { Box, Divider, MenuItem, MenuList, Popover, Typography } from '@mui/material';
-import { useAuth } from 'src/hooks/use-auth';
-import { logout } from "../../store/authSlice";
-import {useAppDispatch} from "../../store/hooks";
+import { logout, selectCurrentUser } from '../../store/authSlice';
+import { useAppDispatch, useAppSelector } from '../../store/hooks';
 
 export const AccountPopover = (props) => {
-  let dispatch = useAppDispatch();
+  const dispatch = useAppDispatch();
   const { anchorEl, onClose, open } = props;
   const router = useRouter();
-  const auth = useAuth();
+  const user = useAppSelector(selectCurrentUser);
 
   const handleSignOut = useCallback(
     () => {
       onClose?.();
       dispatch(logout());
-      router.push('/auth/login');
+      router.push('/auth/login')
     },
-    [onClose, auth, router]
+    [onClose]
   );
 
   return (
@@ -30,7 +29,17 @@ export const AccountPopover = (props) => {
       }}
       onClose={onClose}
       open={open}
-      PaperProps={{ sx: { width: 200 } }}
+      slotProps={{
+        paper: {
+          sx: {
+            width: 200,
+            boxShadow: '0 1px 3px 0 rgba(0, 0, 0, .12)',
+            background: 'rgba(255, 255, 255, 0.2)',
+            backdropFilter: 'blur(20px) saturate(160%) contrast(45%) brightness(140%)',
+            borderRadius: '16px',
+          }
+        }
+      }}
     >
       <Box
         sx={{
@@ -45,7 +54,7 @@ export const AccountPopover = (props) => {
           color="text.secondary"
           variant="body2"
         >
-          Anika Visser
+          {user?.name} ({user?.email})
         </Typography>
       </Box>
       <Divider />

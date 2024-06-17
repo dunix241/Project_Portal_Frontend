@@ -19,7 +19,7 @@ import {
   Typography
 } from '@mui/material';
 import { Layout as DashboardLayout } from 'src/layouts/dashboard/layout';
-import { CustomersSearch } from 'src/sections/customer/customers-search';
+import { Search } from 'src/components/search';
 import { ETable } from 'src/components/table';
 import { useTable } from 'src/hooks/table/use-table';
 import { ChevronLeftIcon, TrashIcon } from '@heroicons/react/24/outline';
@@ -155,7 +155,7 @@ const Page = () => {
         component="main"
         sx={{
           flexGrow: 1,
-          py: 8
+          py: 8,
         }}
       >
         <Backdrop
@@ -223,7 +223,7 @@ const Page = () => {
                 </Button>
               </div>
             </Stack>
-            <CustomersSearch />
+            <Search />
             <ETable
               {...tableConfig}
               columns={[

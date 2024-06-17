@@ -1,19 +1,15 @@
 import ChartBarIcon from '@heroicons/react/24/solid/ChartBarIcon';
-import CogIcon from '@heroicons/react/24/solid/CogIcon';
-import LockClosedIcon from '@heroicons/react/24/solid/LockClosedIcon';
 import ShoppingBagIcon from '@heroicons/react/24/solid/ShoppingBagIcon';
-import UserIcon from '@heroicons/react/24/solid/UserIcon';
-import UserPlusIcon from '@heroicons/react/24/solid/UserPlusIcon';
 import UsersIcon from '@heroicons/react/24/solid/UsersIcon';
-import XCircleIcon from '@heroicons/react/24/solid/XCircleIcon';
-import {SvgIcon} from '@mui/material';
-import {BookOpenIcon} from "@heroicons/react/20/solid";
+import { SvgIcon } from '@mui/material';
+import { BookOpenIcon } from '@heroicons/react/20/solid';
 import { ReceiptPercentIcon, ShoppingCartIcon } from '@heroicons/react/24/solid';
+import { endpointTypes } from '../../agent/axios';
 
 export const items = [
   {
     title: 'Overview',
-    path: '/',
+    path: `/${endpointTypes.cms}`,
     icon: (
       <SvgIcon fontSize="small">
         <ChartBarIcon/>
@@ -22,7 +18,16 @@ export const items = [
   },
   {
     title: 'Customers',
-    path: '/management/customers',
+    path: `/${endpointTypes.cms}/customers`,
+    icon: (
+      <SvgIcon fontSize="small">
+        <UsersIcon/>
+      </SvgIcon>
+    )
+  },
+  {
+    title: 'Academic',
+    path: `/${endpointTypes.cms}/academic`,
     icon: (
       <SvgIcon fontSize="small">
         <UsersIcon/>
@@ -31,7 +36,7 @@ export const items = [
   },
   {
     title: 'Products',
-    path: '/management/products',
+    path: `/${endpointTypes.cms}/products`,
     icon: (
       <SvgIcon fontSize="small">
         <ShoppingBagIcon/>
@@ -40,7 +45,7 @@ export const items = [
   },
   {
     title: 'Categories',
-    path: '/management/categories',
+    path: `/${endpointTypes}/categories`,
     icon: (
       <SvgIcon fontSize="small">
         <BookOpenIcon/>
@@ -49,7 +54,7 @@ export const items = [
   },
   {
     title: 'Orders',
-    path: '/management/orders',
+    path: `/${endpointTypes.cms}/orders`,
     icon: (
       <SvgIcon fontSize="small">
         <ShoppingCartIcon/>
@@ -58,7 +63,7 @@ export const items = [
   },
   {
     title: 'Coupons',
-    path: '/management/coupons',
+    path: `/${endpointTypes.cms}/coupons`,
     icon: (
       <SvgIcon fontSize="small">
         <ReceiptPercentIcon/>
@@ -67,7 +72,7 @@ export const items = [
   },
   // {
   //   title: 'Companies',
-  //   path: '/management/companies',
+  //   path: `/${endpointTypes.cms}/companies`,
   //   icon: (
   //     <SvgIcon fontSize="small">
   //       <ShoppingBagIcon/>
@@ -76,7 +81,7 @@ export const items = [
   // },
   // {
   //   title: 'Account',
-  //   path: '/management/account',
+  //   path: `/${endpointTypes.cms}/account`,
   //   icon: (
   //     <SvgIcon fontSize="small">
   //       <UserIcon/>

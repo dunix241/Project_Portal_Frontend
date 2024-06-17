@@ -18,6 +18,7 @@ import { usePopover } from 'src/hooks/use-popover';
 import { AccountPopover } from './account-popover';
 import {ShoppingCartIcon} from "@heroicons/react/24/solid";
 import CartWidget from '../../sections/product/product-cart-widget';
+import { Logo } from '../../components/logo';
 
 const SIDE_NAV_WIDTH = 280;
 const TOP_NAV_HEIGHT = 64;
@@ -55,32 +56,35 @@ export const TopNav = (props) => {
             px: 2
           }}
         >
-          <Stack
-            alignItems="center"
-            direction="row"
-            spacing={2}
-          >
-            {!lgUp && (
-              <IconButton onClick={onNavOpen}>
-                <SvgIcon fontSize="small">
-                  <Bars3Icon />
-                </SvgIcon>
-              </IconButton>
-            )}
-            <Tooltip title="Search">
-              <IconButton>
-                <SvgIcon fontSize="small">
-                  <MagnifyingGlassIcon />
-                </SvgIcon>
-              </IconButton>
-            </Tooltip>
+          <Stack direction={"row"} alignItems={"center"}>
+            <Logo sx={{height: 30}}/>
+            <Stack
+              alignItems="center"
+              direction="row"
+              spacing={2}
+            >
+              {!lgUp && (
+                <IconButton onClick={onNavOpen}>
+                  <SvgIcon fontSize="small">
+                    <Bars3Icon />
+                  </SvgIcon>
+                </IconButton>
+              )}
+              <Tooltip title="Search">
+                <IconButton>
+                  <SvgIcon fontSize="small">
+                    <MagnifyingGlassIcon />
+                  </SvgIcon>
+                </IconButton>
+              </Tooltip>
+            </Stack>
           </Stack>
           <Stack
             alignItems="center"
             direction="row"
             spacing={2}
           >
-            <CartWidget/>
+            {/* <CartWidget/> */}
             <Avatar
               onClick={accountPopover.handleOpen}
               ref={accountPopover.anchorRef}
@@ -89,8 +93,9 @@ export const TopNav = (props) => {
                 height: 40,
                 width: 40
               }}
-              src="/assets/avatars/avatar-anika-visser.png"
-            />
+            >
+              Hi
+            </Avatar>
           </Stack>
         </Stack>
       </Box>

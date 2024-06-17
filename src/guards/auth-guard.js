@@ -1,12 +1,15 @@
 import { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/router';
 import PropTypes from 'prop-types';
-import { useAuthContext } from 'src/contexts/auth-context';
+import { selectCurrentUser } from '../store/authSlice';
+import { useAppSelector } from '../store/hooks';
+// import { useAuthContext } from 'src/contexts/auth-context';
 
 export const AuthGuard = (props) => {
   const { children } = props;
   const router = useRouter();
-  const { isAuthenticated } = useAuthContext();
+  // const { isAuthenticated } = useAuthContext();
+  const isAuthenticated = useAppSelector(selectCurrentUser)
   const ignore = useRef(false);
   const [checked, setChecked] = useState(false);
 

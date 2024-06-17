@@ -88,7 +88,7 @@ export const SideNav = (props) => {
           {/*   </SvgIcon> */}
           {/* </Box> */}
         </Box>
-        <Divider sx={{ borderColor: 'neutral.700' }} />
+        <Divider/>
         <Box
           component="nav"
           sx={{
@@ -134,9 +134,12 @@ export const SideNav = (props) => {
         open
         PaperProps={{
           sx: {
-            backgroundColor: 'neutral.800',
-            color: 'common.white',
-            width: 280
+            backgroundColor: 'common.white',
+            color: 'neutral.800',
+            width: 280,
+            boxShadow: '0 1px 3px 0 rgba(0, 0, 0, .12)',
+            background: 'rgba(255, 255, 255, 0.2)',
+            backdropFilter: 'blur(20px) saturate(160%) contrast(45%) brightness(140%)',
           }
         }}
         variant="permanent"
@@ -153,9 +156,21 @@ export const SideNav = (props) => {
       open={open}
       PaperProps={{
         sx: {
-          backgroundColor: 'neutral.800',
-          color: 'common.white',
-          width: 280
+          backgroundColor: 'common.white',
+          color: 'neutral.800',
+          width: 280,
+          boxShadow: '0 1px 3px 0 rgba(0, 0, 0, .12)',
+          background: 'rgba(255, 255, 255, 0.2)',
+          backdropFilter: 'blur(20px) saturate(160%) contrast(45%) brightness(140%)',
+          borderTopRightRadius: '16px',
+          borderBottomRightRadius: '16px',
+        }
+      }}
+      ModalProps={{
+        BackdropProps: {
+          sx: {
+            backgroundColor: 'transparent'
+          }
         }
       }}
       sx={{ zIndex: (theme) => theme.zIndex.appBar + 100 }}

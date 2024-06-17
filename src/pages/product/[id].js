@@ -27,7 +27,7 @@ import { ShoppingCartIcon } from '@heroicons/react/24/solid';
 import { ContentEditable } from '@lexical/react/LexicalContentEditable';
 import { LexicalComposer } from '@lexical/react/LexicalComposer';
 import { RichTextPlugin } from '@lexical/react/LexicalRichTextPlugin';
-import { isJson } from '../../utils/isJson';
+import { isJson } from '../../utils/is-json';
 import { editorConfig } from '../../components/editor';
 import { useAddCouponUserMutation } from '../../agent/couponApiSlice';
 import { useAddToCartMutation } from '../../agent/cartApiSlice';

@@ -16,7 +16,8 @@ const Page = () => (
         alignItems: 'center',
         display: 'flex',
         flexGrow: 1,
-        minHeight: '100%'
+        minHeight: '100%',
+        height: '100vh'
       }}
     >
       <Container maxWidth="md">
@@ -69,7 +70,7 @@ const Page = () => (
             sx={{ mt: 3 }}
             variant="contained"
           >
-            Go back to dashboard
+            Go to Home Page
           </Button>
         </Box>
       </Container>

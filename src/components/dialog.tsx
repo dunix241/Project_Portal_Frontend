@@ -1,15 +1,21 @@
 import PropTypes from 'prop-types';
-import { Button, Dialog, DialogActions, DialogContent, DialogTitle } from '@mui/material';
+import {Button, Dialog, DialogActions, DialogContent, DialogProps, DialogTitle} from '@mui/material';
 import { styled } from '@mui/material/styles';
-import { ReactNode } from 'react';
+import { memo, ReactNode } from 'react';
 
 const Root = styled(Dialog)({
   '& .MuiDialog-paper': {
-    minWidth: '500px'
+    width: '500px',
+    maxWidth: '100%',
+    background: 'rgba(255, 255, 255, 0.2)',
+    backdropFilter: 'blur(20px) saturate(160%) contrast(45%) brightness(140%)',
+    borderRadius: '16px',
+  },
+  '& .MuiBackdrop-root': {
+    backgroundColor: 'transparent'
   },
   '.MuiDialogContent-root': {
     paddingTop: '20px !important'
-
   }
 });
 
@@ -28,9 +34,9 @@ type EDialogProps = {
   titleProps?: any,
   contentProps?: any,
   actionProps?:any
-}
+} & DialogProps
 
-export const EDialog = (props : EDialogProps): ReactNode => {
+export const EDialog = memo((props : EDialogProps): ReactNode => {
   const {
     title,
     open,
@@ -56,4 +62,4 @@ export const EDialog = (props : EDialogProps): ReactNode => {
       </DialogActions>
     </Root>
   );
-};
+});

@@ -11,6 +11,7 @@ import { createEmotionCache } from 'src/utils/create-emotion-cache';
 import 'simplebar-react/dist/simplebar.min.css';
 import StoreProvider from "../store/StoreProvider";
 import "./global.css";
+import ThemeCustomization from '../themes';
 
 const clientSideEmotionCache = createEmotionCache();
 
@@ -23,7 +24,7 @@ const App = (props) => {
 
   const getLayout = Component.getLayout ?? ((page) => page);
 
-  const theme = createTheme();
+  // const theme = createTheme();
 
   return (
     <CacheProvider value={emotionCache}>
@@ -37,20 +38,20 @@ const App = (props) => {
         />
       </Head>
         <LocalizationProvider dateAdapter={AdapterDateFns}>
-          <AuthProvider>
-            <ThemeProvider theme={theme}>
-              <CssBaseline/>
-              <StoreProvider>
-              <AuthConsumer>
-                {
-                  (auth) => auth.isLoading
-                    ? <SplashScreen/>
-                    : getLayout(<Component {...pageProps} />)
-                }
-              </AuthConsumer>
-              </StoreProvider>
-            </ThemeProvider>
-          </AuthProvider>
+          {/* <AuthProvider> */}
+            <ThemeCustomization>
+                <CssBaseline/>
+                <StoreProvider>
+                  <AuthConsumer>
+                    {
+                      (auth) => auth.isLoading
+                        ? <SplashScreen/>
+                        : getLayout(<Component {...pageProps} />)
+                    }
+                  </AuthConsumer>
+                </StoreProvider>
+            </ThemeCustomization>
+          {/* </AuthProvider> */}
         </LocalizationProvider>
     </CacheProvider>
   );

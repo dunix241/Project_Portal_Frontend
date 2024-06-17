@@ -1,4 +1,4 @@
-import {useEffect, useMemo, useState} from 'react';
+import { memo, useEffect, useMemo, useState } from 'react';
 import { applySortPagination } from '../../utils/apply-sort-pagination';
 import { PaginationProps, usePagination } from './use-pagination';
 import { SelectionProps, useSelection } from './use-selection';
@@ -9,6 +9,7 @@ type GetPageItemsProps = {
   rowsPerPage: number,
   order: string,
   orderBy: string,
+  searchText: string
 }
 type Pagination = {
   count: number
@@ -19,13 +20,21 @@ type UseTableProps = {
   pageItemsResult?: {items: any[], pagination: Pagination}
   initialPage: number,
   initialRowsPerPage: number,
+  options: {
+    searching: {
+      mapItem: (item: any) => any
+    }
+  }
+  mapItem: (item: any) => any
 }
 export type TableProps = {
   items: any[];
   count: number;
   ids: any[];
+  useSearch: () => {searchText: string, setSearchText: (value: string) => any, lazySearch: boolean}
 } & PaginationProps & SelectionProps & SortFilterProps
-export const useTable = (props: UseTableProps): {
+
+export const useTable = (props: UseTableProps, dependencies?: any[]): {
   onSelectAll: () => void;
   onRowsPerPageChange: (event: any) => void;
   count: number;
@@ -40,22 +49,31 @@ export const useTable = (props: UseTableProps): {
   items: any[];
   ids: any[];
   selected: any[];
-  order: string
+  order: string,
+  useSearch: any
 } => {
-  const {data, pageItemsResult, getPageItems, initialPage = 0, initialRowsPerPage = 5} = props;
+  const {data, pageItemsResult, getPageItems, initialPage = 0, initialRowsPerPage = 5, options} = props;
   const {page, rowsPerPage, onPageChange, onRowsPerPageChange} = usePagination({initialPage, initialRowsPerPage});
   const {orderBy, order, onRequestSort} = useSortFilter();
+  const [searchText, setSearchText] = useState('');
   const [count, setCount] = useState(0);
   const [items, setItems] = useState([]);
+  const [finalizedData, setFinalizedData] = useState(null);
 
   useEffect(() => {
+    Promise.resolve(data).then(data => setFinalizedData(data))
+  }, [data]);
+
+  useEffect(() => {
+    console.log('use table called');
+    console.log(data, pageItemsResult);
     if (getPageItems) {
-      getPageItems({page, rowsPerPage, orderBy, order});
-    } else {
-      setCount(data?.length)
-      setItems(applySortPagination({data, page, rowsPerPage, orderBy, order}))
+      getPageItems({page, rowsPerPage, orderBy, order, searchText});
+    } else if (finalizedData) {
+      setCount(finalizedData?.length)
+      setItems(applySortPagination({data: finalizedData, mapItem: options?.searching?.mapItem, page, rowsPerPage, orderBy, order, searchText}))
     }
-  }, [data, page, rowsPerPage, orderBy, order]);
+  }, [finalizedData, page, rowsPerPage, orderBy, order, searchText, ...(dependencies || [])]);
 
   useEffect(() => {
     if (pageItemsResult) {
@@ -88,6 +106,7 @@ export const useTable = (props: UseTableProps): {
     selected,
     orderBy,
     order,
-    onRequestSort
+    onRequestSort,
+    useSearch: () => ({searchText, setSearchText, lazySearch: !!getPageItems})
   }
 }

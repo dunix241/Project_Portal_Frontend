@@ -1,7 +1,6 @@
-import { createSlice } from '@reduxjs/toolkit'
-import type { PayloadAction } from '@reduxjs/toolkit'
-import {RootState} from "./index";
-import {useEffect} from "react";
+import { createSlice } from '@reduxjs/toolkit';
+import { RootState } from './index';
+import { getItem, setItem } from '../utils/local-storage';
 
 export interface User {
     email: string
@@ -13,7 +12,7 @@ type AuthState = {
 
 const slice = createSlice({
     name: 'auth',
-    initialState: { user: typeof window !== 'undefined' && JSON.parse(localStorage.getItem('user')), token: typeof window !== 'undefined' && localStorage.getItem('token') },
+    initialState: { user: getItem('user') },
     reducers: {
         setCredentials: (
             state,
@@ -21,13 +20,8 @@ const slice = createSlice({
                 payload,
             }: any,
         ) => {
-            // console.log(payload);
             state.user = payload
-            state.token = payload.token
-            if (typeof window !== 'undefined') {
-                localStorage.setItem('token', (state.token));
-                localStorage.setItem('user', JSON.stringify(state.user));
-            }
+            setItem('user', payload)
         },
         logout: (
             state,
@@ -35,10 +29,9 @@ const slice = createSlice({
                 payload,
             }: any,
         ) => {
-            state.token = null
-            if (typeof window !== 'undefined') {
-                localStorage.setItem('token', null);
-            }
+            console.log('log user out');
+            state.user = null
+            setItem('user', null)
         },
     },
 })

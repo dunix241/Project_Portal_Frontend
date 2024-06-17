@@ -16,6 +16,9 @@ import {
 import { alpha } from '@mui/material/styles';
 import { usePopover } from 'src/hooks/use-popover';
 import { AccountPopover } from './account-popover';
+import { useAppSelector } from '../../store/hooks';
+import { selectCurrentUser } from '../../store/authSlice';
+import { stringAvatar, stringToColor } from '../../utils/avatar';
 
 const SIDE_NAV_WIDTH = 280;
 const TOP_NAV_HEIGHT = 64;
@@ -24,14 +27,16 @@ export const TopNav = (props) => {
   const { onNavOpen } = props;
   const lgUp = useMediaQuery((theme) => theme.breakpoints.up('lg'));
   const accountPopover = usePopover();
+  const user = useAppSelector(selectCurrentUser);
 
   return (
     <>
       <Box
         component="header"
         sx={{
-          backdropFilter: 'blur(6px)',
-          backgroundColor: (theme) => alpha(theme.palette.background.default, 0.8),
+          boxShadow: '0 1px 3px 0 rgba(0, 0, 0, 0.12)',
+          background: 'rgba(255, 255, 255, 0.2)',
+          backdropFilter: 'blur(20px) saturate(160%) contrast(45%) brightness(140%)',
           position: 'sticky',
           left: {
             lg: `${SIDE_NAV_WIDTH}px`
@@ -104,10 +109,12 @@ export const TopNav = (props) => {
               sx={{
                 cursor: 'pointer',
                 height: 40,
-                width: 40
+                width: 40,
+                bgcolor: stringToColor(user?.name || '')
               }}
-              src="/assets/avatars/avatar-anika-visser.png"
-            />
+            >
+              {stringAvatar(user?.name || '')}
+            </Avatar>
           </Stack>
         </Stack>
       </Box>

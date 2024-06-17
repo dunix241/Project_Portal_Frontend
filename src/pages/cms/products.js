@@ -5,7 +5,7 @@ import ArrowUpOnSquareIcon from '@heroicons/react/24/solid/ArrowUpOnSquareIcon';
 import PlusIcon from '@heroicons/react/24/solid/PlusIcon';
 import {Backdrop, Box, Button, CircularProgress, Container, Stack, SvgIcon, TextField, Typography} from '@mui/material';
 import {Layout as DashboardLayout} from 'src/layouts/dashboard/layout';
-import {CustomersSearch} from 'src/sections/customer/customers-search';
+import {Search} from 'src/components/search';
 import {ETable} from '../../components/table';
 import {useTable} from '../../hooks/table/use-table';
 import {PencilSquareIcon, TrashIcon} from '@heroicons/react/24/outline';
@@ -20,7 +20,7 @@ import {
 import {useListCategoriesQuery} from "../../agent/categoryApiSlice";
 import {Autocomplete} from "@mui/lab";
 import {Editor} from "../../components/editor"
-import { isJson } from '../../utils/isJson';
+import { isJson } from '../../utils/is-json';
 
 const DialogContent = (props) => {
   const {dialogType, data, handleActions} = props;
@@ -224,7 +224,7 @@ const Page = () => {
                 </Button>
               </div>
             </Stack>
-            <CustomersSearch />
+            <Search />
             <ETable
               {...tableConfig}
               columns={[

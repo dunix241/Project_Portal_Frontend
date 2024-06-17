@@ -13,7 +13,7 @@ import {
   TableRow,
   TableSortLabel
 } from '@mui/material';
-import React, { Fragment, ReactNode, useMemo } from 'react';
+import React, { Fragment, memo, ReactNode, useMemo } from 'react';
 import { Scrollbar } from './scrollbar';
 import { TableProps } from '../hooks/table/use-table';
 import { useSelection } from '../hooks/table/use-selection';
@@ -62,7 +62,7 @@ type ETableProps = {
     render: () => ReactNode
   }[]
 } & TableProps
-export const ETable = (props: ETableProps) => {
+export const ETable = memo((props: ETableProps) => {
   const {
     count = 0,
     items = [],
@@ -215,4 +215,4 @@ export const ETable = (props: ETableProps) => {
       />
     </Card>
   );
-};
+});

@@ -13,34 +13,33 @@ import { Layout as AuthLayout } from 'src/layouts/auth/layout';
 import React, {useCallback, useEffect, useState} from 'react';
 import {Controller, useForm} from "react-hook-form";
 import {useAppDispatch, useAppSelector} from "../../store/hooks";
-import {setCredentials} from "../../store/authSlice";
+import { logout, selectCurrentUser, setCredentials } from '../../store/authSlice';
 import {useLoginMutation} from "../../agent/authApiSlice";
 import {useRouter } from 'next/router';
-import {useAuth} from "../../hooks/use-auth";
+import { endpointTypes } from '../../agent/axios';
+import { redirectUser } from '../../utils/redirect-user';
+import { EDialog } from '../../components/dialog';
+import { useDialog } from '../../hooks/use-dialog';
 
 const Page = () => {
   let dispatch = useAppDispatch();
-  const auth = useAuth();
   const router = useRouter();
-  const usr = useAppSelector(store => store.auth)
-  console.log(usr);
-  useEffect(() => {
-    console.log("effect" + usr.token);
-    if(usr.token){
-      auth.skip();
-      router.push('/');
-    }
-  }, []);
   const [method, setMethod] = useState('email');
 
   const onClick = (credentials) => {
+    // auth.signIn({}).then(() => router.push(`/${endpointTypes.cms}`))
     login(credentials).unwrap()
     .then(user => {
-      console.log("on click" + user);
       dispatch(setCredentials(user));
-      auth.skip();
+      return user;
     })
-    .then(() => router.push('/'))
+    // .then(async user => {
+    //   await auth.signIn(user)
+    //   return user;
+    // })
+    .then((user) => {
+      return router.push(redirectUser(user))
+    })
   };
 
   const {control, handleSubmit} = useForm({
@@ -51,11 +50,28 @@ const Page = () => {
     });
 
   const [login, { isLoading, error }] = useLoginMutation();
-  console.log(error);
-  // const onSubmit = (data) => {
-  //   console.log(data)
-  //   // dispatch(login(data))
-  // };
+
+  const usr = useAppSelector(selectCurrentUser)
+  const dialogConfig = useDialog();
+  const handleLogout = () => {
+    dialogConfig.onClose();
+    dispatch(logout());
+    router.push('/auth/login')
+  };
+
+  useEffect(() => {
+    if (usr) {
+      dialogConfig.onOpen();
+    }
+  }, []);
+
+  // console.log(usr);
+  // useEffect(() => {
+  //   if (usr.token) {
+  //     auth.skip();
+  //     router.push('/');
+  //   }
+  // }, []);
 
   const handleMethodChange = useCallback(
     (event, value) => {
@@ -70,13 +86,42 @@ const Page = () => {
           Login
         </title>
       </Head>
+      <EDialog
+        open={dialogConfig.open}
+        title={'It appears you are already logged in!'}
+        titleProps={{ sx: { fontWeight: 600 } }}
+        dialogProps={{
+          PaperProps: {
+            sx: {
+              width: '550px !important',
+              height: '250px'
+            }
+          }
+        }}
+        renderActions={() => dialogConfig.renderDefaultActions({
+          onCancel: handleLogout,
+          onSubmit: () => {
+            dialogConfig.onClose()
+            router.push(redirectUser(usr))
+          },
+          cancelText: 'Logout',
+          submitText: 'Continue',
+          cancelButtonProps: {
+            variant: 'contained',
+            color: 'error'
+          },
+        })}
+      >
+        To log into a different account, please log out first. Otherwise, you may continue with your current session.
+      </EDialog>
       <Box
         sx={{
           backgroundColor: 'background.paper',
           flex: '1 1 auto',
           alignItems: 'center',
           display: 'flex',
-          justifyContent: 'center'
+          justifyContent: 'center',
+          height: '100vh'
         }}
       >
         <Box
@@ -99,7 +144,7 @@ const Page = () => {
                 color="text.secondary"
                 variant="body2"
               >
-                Don&apos;t have an account?
+                Forget your password?
                 &nbsp;
                 <Link
                   component={NextLink}
@@ -107,7 +152,7 @@ const Page = () => {
                   underline="hover"
                   variant="subtitle2"
                 >
-                  Register
+                  Reset password
                 </Link>
               </Typography>
             </Stack>
@@ -150,7 +195,7 @@ const Page = () => {
                   size="large"
                   sx={{ mt: 3 }}
                   type="submit"
-                  variant="contained"
+                  variant="gradient"
                   onClick={handleSubmit(onClick)}
                   isLoading={isLoading}
                 >

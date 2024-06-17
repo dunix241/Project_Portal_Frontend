@@ -3,7 +3,6 @@ import { apiSlice } from './apiSlice';
 const authApiBaseURL = '/Auth'
 export const authApiSlice =
   apiSlice
-    .enhanceEndpoints({addTagTypes: ['Auth']})
     .injectEndpoints({
       endpoints: (builder) => ({
         login: builder.mutation({
@@ -12,7 +11,6 @@ export const authApiSlice =
             method: 'post',
             data: credentials
           }),
-          invalidatesTags: ['Auth']
         }),
         register: builder.mutation({
           query: (credentials) => ({
@@ -20,9 +18,15 @@ export const authApiSlice =
             method: 'post',
             data: credentials
           }),
-          invalidatesTags: ['Auth']
+        }),
+        resetPassword: builder.mutation({
+          query: (payload) => ({
+            url: `${authApiBaseURL}/ResetPassword`,
+            method: 'patch',
+            data: payload
+          }),
         }),
       })
     })
 
-export const {useLoginMutation, useRegisterMutation} = authApiSlice
+export const {useLoginMutation, useRegisterMutation, useResetPasswordMutation} = authApiSlice

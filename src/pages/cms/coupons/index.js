@@ -15,7 +15,7 @@ import {
   Typography
 } from '@mui/material';
 import { Layout as DashboardLayout } from 'src/layouts/dashboard/layout';
-import { CustomersSearch } from 'src/sections/customer/customers-search';
+import { Search } from 'src/components/search';
 import { ETable } from '../../../components/table';
 import { useTable } from '../../../hooks/table/use-table';
 import { PencilSquareIcon, TrashIcon, UsersIcon } from '@heroicons/react/24/outline';
@@ -215,7 +215,7 @@ const Page = () => {
                 </Button>
               </div>
             </Stack>
-            <CustomersSearch />
+            <Search />
             <ETable
               {...tableConfig}
               columns={[
