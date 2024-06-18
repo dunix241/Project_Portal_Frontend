@@ -1,4 +1,4 @@
-FROM node:14-alpine as build
+FROM node:lts as build
 LABEL authors="datvo"
 WORKDIR /app
 
@@ -8,7 +8,7 @@ RUN npm install --production
 COPY . .
 RUN npm run build
 
-FROM node:14-alpine
+FROM node:lts
 WORKDIR /app
 
 COPY --from=build /app/.next ./.next
