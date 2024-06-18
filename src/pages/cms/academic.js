@@ -431,9 +431,7 @@ const Page = memo(() => {
   const asyncReducer = useMemo(() => ({
       edit: () => Promise.resolve(true)
     }), [])
-  const [{ tab, dialogState }, pageDispatch] = useAsyncReducer(reducer, initialState,
-    asyncReducer
-    );
+  const [{ tab, dialogState }, pageDispatch] = useAsyncReducer(reducer, initialState, asyncReducer);
 
   useEffect(() => {
     getSchools({page: 0, rowsPerPage: 100})
