@@ -40,16 +40,13 @@ export const useDialog = (): DialogProps => {
           }
         }
       },
-      render: () => <>
-        {cancelText && <Button size={'small'} onClick={onCancel} {...cancelButtonProps}>{cancelText}</Button>}
-        {submitText && <Button size={'small'} variant={'contained'} onClick={onSubmit} disabled={disableSubmitting} {...submitButtonProps}>{submitText}</Button>}
-      </>
+      render: () => renderDefaultActions(props)
     }
   }, [])
   const renderDefaultActions = useCallback((props: RenderDefaultActionsProps): ReactNode => {
     const {onSubmit, onCancel, disableSubmitting, cancelText = 'Cancel', submitText = 'Okay', cancelButtonProps, submitButtonProps} = props
     return <>
-      {cancelText && <Button size={'small'} onClick={onCancel} {...cancelButtonProps}>{cancelText}</Button>}
+      {cancelText && <Button size={'small'} variant={'outlined'} onClick={onCancel} {...cancelButtonProps}>{cancelText}</Button>}
       {submitText && <Button size={'small'} variant={'contained'} onClick={onSubmit} disabled={disableSubmitting} {...submitButtonProps}>{submitText}</Button>}
     </>
   }, [])

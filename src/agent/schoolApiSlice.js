@@ -45,10 +45,12 @@ export const schoolApiSlice =
           invalidatesTags: (result, error, arg) => [{ type: 'School', id: arg.id }]
         }),
         removeSchool: builder.mutation({
-          query: (payload) => ({
-            url: `${schoolApiBaseUrl}/${endpointTypes.cms}/${payload.id}`,
-            method: 'delete'
-          }),
+          query: (payload) => {
+            return ({
+              url: `${schoolApiBaseUrl}/${endpointTypes.cms}/${payload.id}`,
+              method: 'delete'
+            })
+          },
           invalidatesTags: ['School']
         })
       })

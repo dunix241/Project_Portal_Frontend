@@ -19,7 +19,7 @@ import { EDialog } from '../../components/dialog';
 import { useDialog } from '../../hooks/use-dialog';
 import {
   useAddLecturerMutation,
-  useLazyListLecturersQuery,
+  useLazyListLecturersQuery, useRemoveLecturerMutation,
   useUpdateLecturerMutation
 } from '../../agent/lecturerApliSlice';
 import LecturerTable, { lecturerActions } from '../../sections/cms/academic/lecturer-table';
@@ -29,18 +29,21 @@ import { autoFieldList } from '../../components/auto-form/auto-fields';
 import SchoolTable, { schoolActions } from '../../sections/cms/academic/school-table';
 import {
   useAddSchoolMutation,
-  useLazyListSchoolsQuery,
+  useLazyListSchoolsQuery, useRemoveSchoolMutation,
   useUpdateSchoolMutation
 } from '../../agent/schoolApiSlice';
 import Field from '../../components/auto-form/components/Field';
 import { useResetPasswordMutation } from '../../agent/authApiSlice';
 import {
   useAddStudentMutation,
-  useLazyListStudentQuery,
+  useLazyListStudentQuery, useRemoveStudentMutation,
   useUpdateStudentMutation
 } from '../../agent/studentApliSlice';
 import StudentTable, { studentActions } from '../../sections/cms/academic/student-table';
 import { useAsyncReducer } from '../../hooks/use-async-reducer';
+import { getLecturerAddEditFields } from '../../sections/cms/academic/lecturer-add-edit-fields';
+import { getStudentAddEditFields } from '../../sections/cms/academic/student-add-edit-fields';
+import { schoolAddEditFields } from '../../sections/cms/academic/school-add-edit-fields';
 
 const DialogContent = (props) => {
   const { methods, dialogState } = props;
@@ -83,10 +86,13 @@ const Page = memo(() => {
   ] = useLazyListStudentQuery();
   const [addSchool, { isLoading: isAddingSchool }] = useAddSchoolMutation();
   const [updateSchool, { isLoading: isUpdatingSchool }] = useUpdateSchoolMutation();
+  const [removeSchool, { isLoading: isRemovingSchool }] = useRemoveSchoolMutation();
   const [addLecturer, { isLoading: isAddingLecturer }] = useAddLecturerMutation();
   const [updateLecturer, { isLoading: isUpdatingLecturer }] = useUpdateLecturerMutation();
+  const [removeLecturer, { isLoading: isRemovingLecturer }] = useRemoveLecturerMutation();
   const [addStudent, { isLoading: isAddingStudent }] = useAddStudentMutation();
   const [updateStudent, { isLoading: isUpdatingStudent }] = useUpdateStudentMutation();
+  const [removeStudent, { isLoading: isRemovingStudent }] = useRemoveStudentMutation();
   const [resetPassword, { isLoading: isResettingPassword }] = useResetPasswordMutation();
   console.log('academic renders');
   console.log(schoolResponse);
@@ -95,12 +101,15 @@ const Page = memo(() => {
     | isFetchingSchool
     | isAddingSchool
     | isUpdatingSchool
+    | isRemovingSchool
     | isFetchingLecturer
     | isAddingLecturer
     | isUpdatingLecturer
+    | isRemovingLecturer
     | isFetchingStudent
     | isAddingStudent
     | isUpdatingStudent
+    | isRemovingStudent
     | isResettingPassword
   ;
 
@@ -116,115 +125,19 @@ const Page = memo(() => {
     ...lecturerActions
   };
 
-  const schoolAddEditFields = [
-    {
-      name: 'name',
-      component: autoFieldList.textField,
-      fullWidth: true,
-      size: 'small',
-      label: 'Name',
-      rules: { required: 'Name is required' }
-    },
-    {
-      name: 'isActive',
-      component: autoFieldList.autocomplete,
-      getOptionLabel: (option) => option ? 'Active' : 'Inactive',
-      options: [true, false],
-      defaultValue: true,
-      inputProps: {
-        label: 'Status',
-        size: 'small'
-      }
-    }
-  ];
-  const lecturerAddEditFields = [
-    {
-      name: 'firstName',
-      component: autoFieldList.textField,
-      fullWidth: true,
-      size: 'small',
-      label: 'First Name',
-      rules: { required: 'First name is required' }
-    },
-    {
-      name: 'lastName',
-      component: autoFieldList.textField,
-      fullWidth: true,
-      size: 'small',
-      label: 'Last Name',
-      rules: { required: 'Last name is required' }
-    },
-    {
-      name: 'title',
-      component: autoFieldList.textField,
-      fullWidth: true,
-      size: 'small',
-      label: 'Title',
-    },
-    // {
-    //   name: 'description',
-    //   component: autoFieldList.textField,
-    //   fullWidth: true,
-    //   size: 'small',
-    //   label: 'Description',
-    //   hidden: true
-    // },
-    {
-      name: 'email',
-      component: autoFieldList.textField,
-      fullWidth: true,
-      size: 'small',
-      label: 'Email',
-      rules: {
-        required: 'Email is required',
-        pattern: {
-          value: /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
-          message: 'Invalid email'
-        }
-      }
-    },
-    {
-      name: 'phoneNumber',
-      component: autoFieldList.textField,
-      fullWidth: true,
-      size: 'small',
-      label: 'Phone Number'
-    },
-    {
-      name: 'schoolId',
-      component: autoFieldList.autocomplete,
-      getOptionLabel: (option) => schoolResponse?.items.find(school => school.id === option)?.name
-        || '',
-      options: schoolResponse?.items.map(school => school.id) || [],
-      defaultValue: schoolResponse?.items[0]?.id || null,
-      inputProps: {
-        label: 'School',
-        size: 'small'
-      }
-    },
-    {
-      name: 'isActive',
-      component: autoFieldList.autocomplete,
-      getOptionLabel: (option) => option ? 'Active' : 'Inactive',
-      options: [true, false],
-      defaultValue: true,
-      inputProps: {
-        label: 'Status',
-        size: 'small'
-      }
-    }
-  ];
+  const lecturerAddEditFields = useMemo(() => getLecturerAddEditFields(schoolResponse?.items), [schoolResponse]);
+  const studentAddEditFields = useMemo(() => getStudentAddEditFields(schoolResponse?.items), [schoolResponse]);
 
   const initialDialogState = useMemo(
     () => (
-  {
-    title: '',
-    disableSubmitting: false,
-    submitAction: '',
-    formValues: {},
-    fields: [],
-    Component: null
-  }), [])
+      {
+        title: '',
+        disableSubmitting: false,
+        submitAction: '',
+        formValues: {},
+        fields: [],
+        Component: null
+      }), []);
 
   const actionHandlers = useCallback((state, action) => {
     const { type, payload, dispatch } = action;
@@ -248,7 +161,8 @@ const Page = memo(() => {
       ],
       [
         pageActions.onDialogAddOpen, () => {
-      dispatch({type: 'edit'})
+        dispatch({type: 'edit'})
+        console.log(lecturerAddEditFields)
         switch (state.tab) {
           case 0:
             return {
@@ -290,7 +204,7 @@ const Page = memo(() => {
                   schoolId: null,
                   isActive: true
                 },
-                fields: lecturerAddEditFields,
+                fields: studentAddEditFields,
                 submitAction: studentActions.onDialogStudentAddSubmit
               }
             };
@@ -301,19 +215,19 @@ const Page = memo(() => {
       ],
       [
         schoolActions.onDialogSchoolAddSubmit, () => {
-        addSchool(payload).unwrap().then(() => dialogConfig.onClose());
+        addSchool(payload).unwrap().then(() => dispatch({type: pageActions.onDialogCancel}));
         return state;
       }
       ],
       [
         lecturerActions.onDialogLecturerAddSubmit, () => {
-        addLecturer(payload).unwrap().then(() => dialogConfig.onClose());
+        addLecturer(payload).unwrap().then(() => dispatch({type: pageActions.onDialogCancel}));
         return state;
       }
       ],
       [
         studentActions.onDialogStudentAddSubmit, () => {
-        addStudent(payload).unwrap().then(() => dialogConfig.onClose());
+        addStudent(payload).unwrap().then(() => dispatch({type: pageActions.onDialogCancel}));
         return state;
       }
       ],
@@ -348,26 +262,137 @@ const Page = memo(() => {
           title: 'Update student\'s information',
           formValues: payload,
           submitAction: studentActions.onDialogStudentEditSubmit,
-          fields: lecturerAddEditFields
+          fields: studentAddEditFields
         }
       }
       ],
       [
         schoolActions.onDialogSchoolEditSubmit, () => {
-        updateSchool(payload).unwrap().then(() => dialogConfig.onClose());
-        return {...state, dialogState: initialDialogState};
+        updateSchool(payload).unwrap().then(() => dispatch({type: pageActions.onDialogCancel}));
+        return {...state};
       }
       ],
       [
         lecturerActions.onDialogLecturerEditSubmit, () => {
-        updateLecturer(payload).unwrap().then(() => dialogConfig.onClose());
-        return {...state, dialogState: initialDialogState};
+        updateLecturer(payload).unwrap().then(() => dispatch({type: pageActions.onDialogCancel}));
+        return {...state};
       }
       ],
       [
         studentActions.onDialogStudentEditSubmit, () => {
-        updateStudent(payload).unwrap().then(() => dialogConfig.onClose());
-        return {...state, dialogState: initialDialogState};
+        updateStudent(payload).unwrap().then(() => dispatch({type: pageActions.onDialogCancel}));
+        return {...state};
+      }
+      ],
+      [
+        schoolActions.onDialogSchoolRemoveOpen, {
+        ...state, dialogState: {
+          ...state.dialogState,
+          title: 'Remove School',
+          data: payload,
+          submitAction: schoolActions.onDialogSchoolRemoveSubmit,
+          Component: () => <Box>
+            <Typography>Are you sure you would like to remove the school
+              '<Typography component={'span'} fontWeight={'bold'}>{payload.name}</Typography>'
+            </Typography>
+          </Box>
+          ,
+          actionProps: {
+            submitText: 'Remove',
+            submitButtonProps: {
+              color: 'error',
+            },
+            cancelButtonProps: {
+              variant: 'contained'
+            }
+          },
+        }
+      }
+      ],
+      [
+        lecturerActions.onDialogLecturerRemoveOpen, {
+        ...state, dialogState: {
+          ...state.dialogState,
+          title: 'Remove Lecturer',
+          data: payload,
+          submitAction: lecturerActions.onDialogLecturerRemoveSubmit,
+          Component: () => <Box>
+            <Typography>Are you sure you would like to remove the lecturer
+              '<Typography component={'span'} fontWeight={'bold'}>{payload.fullName}</Typography>'
+            </Typography>
+          </Box>
+          ,
+          actionProps: {
+            submitText: 'Remove',
+            submitButtonProps: {
+              color: 'error',
+            },
+            cancelButtonProps: {
+              variant: 'contained'
+            }
+          },
+        }
+      }
+      ],
+      [
+        studentActions.onDialogStudentRemoveOpen, {
+        ...state, dialogState: {
+          ...state.dialogState,
+          title: 'Remove Student',
+          data: payload,
+          submitAction: studentActions.onDialogStudentRemoveSubmit,
+          Component: () => <Box>
+            <Typography>Are you sure you would like to remove the student
+              '<Typography component={'span'} fontWeight={'bold'}>{payload.fullName}</Typography>'
+            </Typography>
+          </Box>
+          ,
+          actionProps: {
+            submitText: 'Remove',
+            submitButtonProps: {
+              color: 'error',
+            },
+            cancelButtonProps: {
+              variant: 'contained'
+            }
+          },
+        }
+      }
+      ],
+      [
+        studentActions.onDialogStudentRemoveOpen, {
+        ...state, dialogState: {
+          ...state.dialogState,
+          title: 'Remove',
+          data: payload,
+          submitAction: studentActions.onDialogStudentRemoveSubmit,
+          actionProps: {
+            submitButtonProps: {
+              color: 'error',
+            },
+            cancelButtonProps: {
+              variant: 'contained'
+            }
+          },
+        }
+      }
+      ],
+      [
+        schoolActions.onDialogSchoolRemoveSubmit, () => {
+        removeSchool(state.dialogState.data).unwrap().then(() => dispatch({type: pageActions.onDialogCancel}));
+        return state;
+      }
+      ],
+      [
+        lecturerActions.onDialogLecturerRemoveSubmit, () => {
+        removeLecturer(state.dialogState.data).unwrap().then(() => dispatch({type: pageActions.onDialogCancel}));
+        return state;
+      }
+      ],
+      [
+        studentActions.onDialogStudentRemoveSubmit, () => {
+        removeStudent(state.dialogState.data).unwrap().then(() => dispatch({type: pageActions.onDialogCancel}));
+        return state;
       }
       ],
       [
@@ -418,8 +443,10 @@ const Page = memo(() => {
       }
       ]
     ];
-  }, [dialogConfig]);
+  }, [dialogConfig, lecturerAddEditFields]);
+
   const reducer = useMemo(() => reducerBuilder(actionHandlers), [actionHandlers]);
+
   const initialState = useMemo(() =>
     ({
       tab: 0,
@@ -431,6 +458,7 @@ const Page = memo(() => {
   const asyncReducer = useMemo(() => ({
       edit: () => Promise.resolve(true)
     }), [])
+
   const [{ tab, dialogState }, pageDispatch] = useAsyncReducer(reducer, initialState, asyncReducer);
 
   useEffect(() => {

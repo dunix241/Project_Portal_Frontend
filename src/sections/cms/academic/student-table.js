@@ -24,7 +24,7 @@ const StudentTable = (props) => {
       {...tableConfig}
       columns={[
         {
-          field: 'name',
+          field: 'fullName',
           label: 'Name'
         },
         {

@@ -3,8 +3,16 @@ import ShoppingBagIcon from '@heroicons/react/24/solid/ShoppingBagIcon';
 import UsersIcon from '@heroicons/react/24/solid/UsersIcon';
 import { SvgIcon } from '@mui/material';
 import { BookOpenIcon } from '@heroicons/react/20/solid';
-import { ReceiptPercentIcon, ShoppingCartIcon } from '@heroicons/react/24/solid';
+import {
+  AcademicCapIcon,
+  CalendarDaysIcon,
+  DocumentTextIcon,
+  ReceiptPercentIcon,
+  RectangleStackIcon,
+  ShoppingCartIcon
+} from '@heroicons/react/24/solid';
 import { endpointTypes } from '../../agent/axios';
+import Academic from '../../pages/cms/academic';
 
 export const items = [
   {
@@ -31,6 +39,42 @@ export const items = [
     icon: (
       <SvgIcon fontSize="small">
         <UsersIcon/>
+      </SvgIcon>
+    )
+  },
+  {
+    title: 'Projects',
+    path: `/${endpointTypes.cms}/projects`,
+    icon: (
+      <SvgIcon fontSize="small">
+        <AcademicCapIcon/>
+      </SvgIcon>
+    )
+  },
+  {
+    title: 'Semesters',
+    path: `/${endpointTypes.cms}/semesters`,
+    icon: (
+      <SvgIcon fontSize="small">
+        <CalendarDaysIcon/>
+      </SvgIcon>
+    )
+  },
+  {
+    title: 'Enrollment Plans',
+    path: `/${endpointTypes.cms}/enrollment-plans`,
+    icon: (
+      <SvgIcon fontSize="small">
+        <RectangleStackIcon/>
+      </SvgIcon>
+    )
+  },
+  {
+    title: 'Enrollments',
+    path: `/${endpointTypes.cms}/enrollments`,
+    icon: (
+      <SvgIcon fontSize="small">
+        <DocumentTextIcon/>
       </SvgIcon>
     )
   },
