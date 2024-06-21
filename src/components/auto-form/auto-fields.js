@@ -3,13 +3,19 @@ import RadioListField from "./components/RadioListField";
 import TextField from "./components/TextField";
 import LabeledCheckbox from "./components/LabeledCheckbox";
 import Autocomplete from './components/Autocomplete';
+import DateRangePicker from './components/DateRangePicker';
+import { DateTimePicker } from '@mui/x-date-pickers';
+import DateTimeRangeField from './components/DateTimeRangeField';
 
 export const autoFieldList = {
   textField: 'textField',
   labeledCheckbox: 'labeledCheckbox',
   checkboxList: 'checkboxList',
   radiosList: 'radioList',
-  autocomplete: 'autocomplete'
+  autocomplete: 'autocomplete',
+  dateRangePicker: 'dateRangePicker',
+  dateTimePicker: 'dateTimePicker',
+  dateTimeRangeField: 'dateTimeRangeField'
 }
 
 export let autoFieldComponents = {
@@ -17,5 +23,8 @@ export let autoFieldComponents = {
   [autoFieldList.labeledCheckbox]: LabeledCheckbox,
   [autoFieldList.checkboxList]: CheckboxListField,
   [autoFieldList.radiosList]: RadioListField,
-  [autoFieldList.autocomplete]: Autocomplete
+  [autoFieldList.autocomplete]: Autocomplete,
+  [autoFieldList.dateRangePicker]: DateRangePicker,
+  [autoFieldList.dateTimePicker]: DateTimePicker,
+  [autoFieldList.dateTimeRangeField]: DateTimeRangeField,
 };

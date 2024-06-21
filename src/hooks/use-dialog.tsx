@@ -33,7 +33,6 @@ export const useDialog = (): DialogProps => {
       submitOnEnterPressed: {
         onKeyUp: (e) => {
           const ENTER = 13;
-          console.log(e.keyCode);
 
           if (e.keyCode === ENTER) {
             onSubmit();

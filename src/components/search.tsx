@@ -6,11 +6,12 @@ type SearchProps = {
   placeholder?: string,
   searchText?: string,
   setSearchText?: (searchText: string) => any,
-  lazySearch?: boolean
+  lazySearch?: boolean,
+  StartComponent?: ReactNode
 }
 
 export const Search = (props: SearchProps): ReactNode => {
-  const {placeholder, searchText, setSearchText, lazySearch} = props;
+  const {placeholder, searchText, setSearchText, lazySearch, StartComponent} = props;
   const [value, setValue] = useState(searchText || '')
   const handleChange = (val) => {
     if (lazySearch) {
@@ -20,7 +21,8 @@ export const Search = (props: SearchProps): ReactNode => {
     }
   }
 
-  return <Card sx={{ p: 2 }}>
+  return <Card sx={{ p: 2, display: 'flex', gap: 1 }}>
+    {StartComponent && <StartComponent/>}
     <OutlinedInput
       value={value || ''}
       onChange={(event) => handleChange(event.target.value)}

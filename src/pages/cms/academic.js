@@ -1,4 +1,4 @@
-import { memo, useCallback, useEffect, useMemo, useReducer } from 'react';
+import { memo, useCallback, useEffect, useMemo } from 'react';
 import Head from 'next/head';
 import ArrowDownOnSquareIcon from '@heroicons/react/24/solid/ArrowDownOnSquareIcon';
 import ArrowUpOnSquareIcon from '@heroicons/react/24/solid/ArrowUpOnSquareIcon';
@@ -8,10 +8,12 @@ import {
   Box,
   Button,
   CircularProgress,
-  Container, Stack,
+  Container,
+  Stack,
   SvgIcon,
   Tab,
-  Tabs, Typography, Input, TextField
+  Tabs,
+  Typography
 } from '@mui/material';
 import { Layout as DashboardLayout } from '../../layouts/dashboard/layout';
 import { useTable } from '../../hooks/table/use-table';
@@ -19,24 +21,26 @@ import { EDialog } from '../../components/dialog';
 import { useDialog } from '../../hooks/use-dialog';
 import {
   useAddLecturerMutation,
-  useLazyListLecturersQuery, useRemoveLecturerMutation,
+  useLazyListLecturersQuery,
+  useRemoveLecturerMutation,
   useUpdateLecturerMutation
 } from '../../agent/lecturerApliSlice';
 import LecturerTable, { lecturerActions } from '../../sections/cms/academic/lecturer-table';
 import { reducerBuilder } from '../../utils/reducer-builder';
 import { FormProvider, useForm } from 'react-hook-form';
-import { autoFieldList } from '../../components/auto-form/auto-fields';
 import SchoolTable, { schoolActions } from '../../sections/cms/academic/school-table';
 import {
   useAddSchoolMutation,
-  useLazyListSchoolsQuery, useRemoveSchoolMutation,
+  useLazyListSchoolsQuery,
+  useRemoveSchoolMutation,
   useUpdateSchoolMutation
 } from '../../agent/schoolApiSlice';
 import Field from '../../components/auto-form/components/Field';
 import { useResetPasswordMutation } from '../../agent/authApiSlice';
 import {
   useAddStudentMutation,
-  useLazyListStudentQuery, useRemoveStudentMutation,
+  useLazyListStudentQuery,
+  useRemoveStudentMutation,
   useUpdateStudentMutation
 } from '../../agent/studentApliSlice';
 import StudentTable, { studentActions } from '../../sections/cms/academic/student-table';
@@ -62,7 +66,7 @@ const DialogContent = (props) => {
 const Page = memo(() => {
   const [
     getSchools, {
-      data: schoolResponse,
+      data: schoolData,
       error: schoolError,
       isLoading: isLoadingSchool,
       isFetching: isFetchingSchool
@@ -70,7 +74,7 @@ const Page = memo(() => {
   ] = useLazyListSchoolsQuery();
   const [
     getLecturers, {
-      data: lecturerResponse,
+      data: lecturerData,
       error: lecturerError,
       isLoading: isLoadingLecturer,
       isFetching: isFetchingLecturer
@@ -78,7 +82,7 @@ const Page = memo(() => {
   ] = useLazyListLecturersQuery();
   const [
     getStudents, {
-      data: studentResponse,
+      data: studentData,
       error: studentError,
       isLoading: isLoadingStudent,
       isFetching: isFetchingStudent
@@ -95,7 +99,7 @@ const Page = memo(() => {
   const [removeStudent, { isLoading: isRemovingStudent }] = useRemoveStudentMutation();
   const [resetPassword, { isLoading: isResettingPassword }] = useResetPasswordMutation();
   console.log('academic renders');
-  console.log(schoolResponse);
+  console.log(schoolData);
 
   const isPageLoading = isFetchingLecturer
     | isFetchingSchool
@@ -125,8 +129,8 @@ const Page = memo(() => {
     ...lecturerActions
   };
 
-  const lecturerAddEditFields = useMemo(() => getLecturerAddEditFields(schoolResponse?.items), [schoolResponse]);
-  const studentAddEditFields = useMemo(() => getStudentAddEditFields(schoolResponse?.items), [schoolResponse]);
+  const lecturerAddEditFields = useMemo(() => getLecturerAddEditFields(schoolData?.items), [schoolData]);
+  const studentAddEditFields = useMemo(() => getStudentAddEditFields(schoolData?.items), [schoolData]);
 
   const initialDialogState = useMemo(
     () => (
@@ -360,24 +364,6 @@ const Page = memo(() => {
       }
       ],
       [
-        studentActions.onDialogStudentRemoveOpen, {
-        ...state, dialogState: {
-          ...state.dialogState,
-          title: 'Remove',
-          data: payload,
-          submitAction: studentActions.onDialogStudentRemoveSubmit,
-          actionProps: {
-            submitButtonProps: {
-              color: 'error',
-            },
-            cancelButtonProps: {
-              variant: 'contained'
-            }
-          },
-        }
-      }
-      ],
-      [
         schoolActions.onDialogSchoolRemoveSubmit, () => {
         removeSchool(state.dialogState.data).unwrap().then(() => dispatch({type: pageActions.onDialogCancel}));
         return state;
@@ -443,7 +429,7 @@ const Page = memo(() => {
       }
       ]
     ];
-  }, [dialogConfig, lecturerAddEditFields]);
+  }, [dialogConfig, lecturerAddEditFields, studentAddEditFields]);
 
   const reducer = useMemo(() => reducerBuilder(actionHandlers), [actionHandlers]);
 
@@ -466,7 +452,7 @@ const Page = memo(() => {
   }, []);
 
   let schoolTableConfig = useTable({
-    data: schoolResponse?.items,
+    data: schoolData?.items,
     options: {
       searching: {
         mapItem: (item) => {
@@ -486,9 +472,9 @@ const Page = memo(() => {
     getPageItems: (query) => {
         getLecturers(query);
     },
-    pageItemsResult: lecturerResponse ? {
-      items: lecturerResponse.items,
-      pagination: { count: lecturerResponse.pagination?.totalCount }
+    pageItemsResult: lecturerData ? {
+      items: lecturerData.items,
+      pagination: { count: lecturerData.pagination?.totalCount }
     } : null
   });
 
@@ -496,9 +482,9 @@ const Page = memo(() => {
     getPageItems: (query) => {
       getStudents(query);
     },
-    pageItemsResult: studentResponse ? {
-      items: studentResponse.items,
-      pagination: { count: studentResponse.pagination?.totalCount }
+    pageItemsResult: studentData ? {
+      items: studentData.items,
+      pagination: { count: studentData.pagination?.totalCount }
     } : null
   });
 
