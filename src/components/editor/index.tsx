@@ -24,7 +24,10 @@ import ListMaxIndentLevelPlugin from './plugins/ListMaxIndentLevelPlugin';
 import CodeHighlightPlugin from './plugins/CodeHighlightPlugin';
 import AutoLinkPlugin from './plugins/AutoLinkPlugin';
 import { OnChangePlugin } from '@lexical/react/LexicalOnChangePlugin';
-import { ReactNode } from 'react';
+import React, { ReactNode } from 'react';
+import { ClearEditorPlugin } from '@lexical/react/LexicalClearEditorPlugin';
+import { HashtagPlugin } from '@lexical/react/LexicalHashtagPlugin';
+import { SetInitialValuePlugin } from './plugins/SetInitialValuePlugin';
 
 type PlaceholderProps = {
   text: string | null
@@ -55,6 +58,42 @@ export const editorConfig : InitialConfigType = {
     AutoLinkNode,
     LinkNode
   ]
+  // nodes: [
+  //   HeadingNode,
+  //   ListNode,
+  //   ListItemNode,
+  //   QuoteNode,
+  //   CodeNode,
+  //   TableNode,
+  //   TableCellNode,
+  //   TableRowNode,
+  //   HashtagNode,
+  //   CodeHighlightNode,
+  //   AutoLinkNode,
+  //   LinkNode,
+  //   OverflowNode,
+  //   PollNode,
+  //   StickyNode,
+  //   ImageNode,
+  //   InlineImageNode,
+  //   MentionNode,
+  //   EmojiNode,
+  //   ExcalidrawNode,
+  //   EquationNode,
+  //   AutocompleteNode,
+  //   KeywordNode,
+  //   HorizontalRuleNode,
+  //   TweetNode,
+  //   YouTubeNode,
+  //   FigmaNode,
+  //   MarkNode,
+  //   CollapsibleContainerNode,
+  //   CollapsibleContentNode,
+  //   CollapsibleTitleNode,
+  //   PageBreakNode,
+  //   LayoutContainerNode,
+  //   LayoutItemNode,
+  // ];
 };
 
 type EditorProps = Partial<{
@@ -68,26 +107,30 @@ export function Editor(props : EditorProps): ReactNode {
 
   return (
     <LexicalComposer initialConfig={{...editorConfig, ...other, editorState: value}}>
-      <div className="editor-container">
+      <div className="editor-container" style={{margin: 0}}>
         <ToolbarPlugin />
-        <div className="editor-inner">
+        <div className="editor-inner" style={{backgroundColor: 'transparent'}}>
           <RichTextPlugin
-            contentEditable={<ContentEditable className="editor-input" />}
-            placeholder={<Placeholder text={placeholder} />}
+            contentEditable={<ContentEditable className="editor-input"/>}
+            placeholder={<Placeholder text={placeholder}/>}
             ErrorBoundary={LexicalErrorBoundary}
           />
-          <HistoryPlugin />
+          <HistoryPlugin/>
           {/* <TreeViewPlugin /> */}
-          <AutoFocusPlugin />
-          <CodeHighlightPlugin />
+          <AutoFocusPlugin/>
+          <CodeHighlightPlugin/>
           <OnChangePlugin onChange={(editorState) => {
-            onChange?.(JSON.stringify(editorState))
+            onChange?.(JSON.stringify(editorState));
           }}/>
-          <ListPlugin />
-          <LinkPlugin />
+          <ListPlugin/>
+          <LinkPlugin/>
+          <AutoLinkPlugin/>
+          <ListMaxIndentLevelPlugin maxDepth={7}/>
+          <MarkdownShortcutPlugin transformers={TRANSFORMERS}/>
+
+          <AutoFocusPlugin />
+          <ClearEditorPlugin />
           <AutoLinkPlugin />
-          <ListMaxIndentLevelPlugin maxDepth={7} />
-          <MarkdownShortcutPlugin transformers={TRANSFORMERS} />
         </div>
       </div>
     </LexicalComposer>

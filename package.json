@@ -6,7 +6,7 @@
   "homepage": "https://devias.io",
   "private": false,
   "scripts": {
-    "dev": "next",
+    "dev": "next dev",
     "build": "next build",
     "start": "next start",
     "export": "next export",
@@ -23,6 +23,7 @@
     "@heroicons/react": "2.0.18",
     "@iconify/react": "^4.1.1",
     "@lexical/code": "^0.16.0",
+    "@lexical/html": "^0.16.0",
     "@lexical/link": "^0.16.0",
     "@lexical/list": "^0.16.0",
     "@lexical/markdown": "^0.16.0",

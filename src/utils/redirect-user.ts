@@ -1,5 +1,5 @@
 const redirects: (string | string[])[][] = [
-  [['Students', 'Lecturers'], '/pms'],
+  [['Students', 'Lecturers'], '/portal'],
   [['Admins'], '/cms'],
 ];
 

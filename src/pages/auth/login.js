@@ -186,7 +186,7 @@ const Page = () => {
                     )}
                   />
                   {error && <Typography variant="subtitle2" sx={{mt: 2, color: 'error.main', textAlign: 'center'}}>
-                    Error
+                    Incorrect Email or Password. Try again.
                   </Typography>}
                 </Stack>
 

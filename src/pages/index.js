@@ -15,6 +15,8 @@ const Page = () => {
   useEffect(() => {
     if (user) {
       router.push(redirectUser(user))
+    } else {
+      router.push('auth/login')
     }
   }, [user]);
 

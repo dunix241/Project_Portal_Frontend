@@ -12,9 +12,8 @@ import {
   ShoppingCartIcon
 } from '@heroicons/react/24/solid';
 import { endpointTypes } from '../../agent/axios';
-import Academic from '../../pages/cms/academic';
 
-export const items = [
+export const navItems = [
   {
     title: 'Overview',
     path: `/${endpointTypes.cms}`,
@@ -24,15 +23,15 @@ export const items = [
       </SvgIcon>
     )
   },
-  {
-    title: 'Customers',
-    path: `/${endpointTypes.cms}/customers`,
-    icon: (
-      <SvgIcon fontSize="small">
-        <UsersIcon/>
-      </SvgIcon>
-    )
-  },
+  // {
+  //   title: 'Customers',
+  //   path: `/${endpointTypes.cms}/customers`,
+  //   icon: (
+  //     <SvgIcon fontSize="small">
+  //       <UsersIcon/>
+  //     </SvgIcon>
+  //   )
+  // },
   {
     title: 'Academic',
     path: `/${endpointTypes.cms}/academic`,
@@ -78,42 +77,42 @@ export const items = [
       </SvgIcon>
     )
   },
-  {
-    title: 'Products',
-    path: `/${endpointTypes.cms}/products`,
-    icon: (
-      <SvgIcon fontSize="small">
-        <ShoppingBagIcon/>
-      </SvgIcon>
-    )
-  },
-  {
-    title: 'Categories',
-    path: `/${endpointTypes}/categories`,
-    icon: (
-      <SvgIcon fontSize="small">
-        <BookOpenIcon/>
-      </SvgIcon>
-    )
-  },
-  {
-    title: 'Orders',
-    path: `/${endpointTypes.cms}/orders`,
-    icon: (
-      <SvgIcon fontSize="small">
-        <ShoppingCartIcon/>
-      </SvgIcon>
-    )
-  },
-  {
-    title: 'Coupons',
-    path: `/${endpointTypes.cms}/coupons`,
-    icon: (
-      <SvgIcon fontSize="small">
-        <ReceiptPercentIcon/>
-      </SvgIcon>
-    )
-  },
+  // {
+  //   title: 'Products',
+  //   path: `/${endpointTypes.cms}/products`,
+  //   icon: (
+  //     <SvgIcon fontSize="small">
+  //       <ShoppingBagIcon/>
+  //     </SvgIcon>
+  //   )
+  // },
+  // {
+  //   title: 'Categories',
+  //   path: `/${endpointTypes}/categories`,
+  //   icon: (
+  //     <SvgIcon fontSize="small">
+  //       <BookOpenIcon/>
+  //     </SvgIcon>
+  //   )
+  // },
+  // {
+  //   title: 'Orders',
+  //   path: `/${endpointTypes.cms}/orders`,
+  //   icon: (
+  //     <SvgIcon fontSize="small">
+  //       <ShoppingCartIcon/>
+  //     </SvgIcon>
+  //   )
+  // },
+  // {
+  //   title: 'Coupons',
+  //   path: `/${endpointTypes.cms}/coupons`,
+  //   icon: (
+  //     <SvgIcon fontSize="small">
+  //       <ReceiptPercentIcon/>
+  //     </SvgIcon>
+  //   )
+  // },
   // {
   //   title: 'Companies',
   //   path: `/${endpointTypes.cms}/companies`,

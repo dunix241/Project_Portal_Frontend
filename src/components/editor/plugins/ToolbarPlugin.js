@@ -537,7 +537,7 @@ export default function ToolbarPlugin() {
   }, [editor, isLink]);
 
   return (
-    <div className="toolbar" ref={toolbarRef}>
+    <div className="toolbar" ref={toolbarRef} style={{flexWrap: 'wrap', background: 'transparent'}}>
       <button
         disabled={!canUndo}
         onClick={() => {

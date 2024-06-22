@@ -1,24 +1,11 @@
-import { useCallback } from 'react';
-import { useRouter } from 'next/navigation';
 import PropTypes from 'prop-types';
 import { Box, Divider, MenuItem, MenuList, Popover, Typography } from '@mui/material';
-import { logout, selectCurrentUser } from '../../store/authSlice';
-import { useAppDispatch, useAppSelector } from '../../store/hooks';
+import { selectCurrentUser } from '../../store/authSlice';
+import { useAppSelector } from '../../store/hooks';
 
 export const AccountPopover = (props) => {
-  const dispatch = useAppDispatch();
-  const { anchorEl, onClose, open } = props;
-  const router = useRouter();
+  const { anchorEl, onClose, open, items } = props;
   const user = useAppSelector(selectCurrentUser);
-
-  const handleSignOut = useCallback(
-    () => {
-      onClose?.();
-      dispatch(logout());
-      router.push('/auth/login')
-    },
-    [onClose]
-  );
 
   return (
     <Popover
@@ -54,7 +41,7 @@ export const AccountPopover = (props) => {
           color="text.secondary"
           variant="body2"
         >
-          {user?.name} ({user?.email})
+          {user?.fullName} ({user?.email})
         </Typography>
       </Box>
       <Divider />
@@ -68,9 +55,7 @@ export const AccountPopover = (props) => {
           }
         }}
       >
-        <MenuItem onClick={handleSignOut}>
-          Sign out
-        </MenuItem>
+        {items.map((item, index) => <MenuItem key={index} {...item}/>)}
       </MenuList>
     </Popover>
   );

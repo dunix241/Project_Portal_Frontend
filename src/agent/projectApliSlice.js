@@ -30,6 +30,12 @@ export const projectApiSlice =
             return [{ type: 'Project', id: arg.id }]
           },
         }),
+        getProjectOverview: builder.query({
+          query: () => ({
+            url: `${projectApiBaseUrl}/${endpointTypes.pms}/Overview`, method: 'get'
+          }),
+          providesTags: (result = [], error, arg) => ['ProjectOverview']
+        }),
         addProject: builder.mutation({
           query: (payload) => ({
             url: `${projectApiBaseUrl}/${endpointTypes.cms}`,
@@ -58,4 +64,4 @@ export const projectApiSlice =
       })
     })
 
-export const {useListProjectsQuery, useLazyListProjectsQuery, useGetProjectQuery, useAddProjectMutation, useUpdateProjectMutation, useRemoveProjectMutation} = projectApiSlice
+export const {useListProjectsQuery, useLazyListProjectsQuery, useGetProjectQuery, useGetProjectOverviewQuery, useAddProjectMutation, useUpdateProjectMutation, useRemoveProjectMutation} = projectApiSlice

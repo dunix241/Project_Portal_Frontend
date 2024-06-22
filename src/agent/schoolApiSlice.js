@@ -56,4 +56,4 @@ export const schoolApiSlice =
       })
     })
 
-export const {useListSchoolsQuery, useLazyListSchoolsQuery, useGetSchoolQuery, useAddSchoolMutation, useUpdateSchoolMutation, useRemoveSchoolMutation} = schoolApiSlice
+export const {useListSchoolsQuery, useLazyListSchoolsQuery, useGetSchoolQuery, useLazyGetSchoolQuery, useAddSchoolMutation, useUpdateSchoolMutation, useRemoveSchoolMutation} = schoolApiSlice

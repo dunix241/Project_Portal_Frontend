@@ -6,6 +6,8 @@ import Autocomplete from './components/Autocomplete';
 import DateRangePicker from './components/DateRangePicker';
 import { DateTimePicker } from '@mui/x-date-pickers';
 import DateTimeRangeField from './components/DateTimeRangeField';
+import RichTextEditor from './components/RichTextEditor';
+import Checkbox from './components/Checkbox';
 
 export const autoFieldList = {
   textField: 'textField',
@@ -15,7 +17,9 @@ export const autoFieldList = {
   autocomplete: 'autocomplete',
   dateRangePicker: 'dateRangePicker',
   dateTimePicker: 'dateTimePicker',
-  dateTimeRangeField: 'dateTimeRangeField'
+  dateTimeRangeField: 'dateTimeRangeField',
+  richTextEditor: 'richTextEditor',
+  checkbox: 'checkbox',
 }
 
 export let autoFieldComponents = {
@@ -27,4 +31,6 @@ export let autoFieldComponents = {
   [autoFieldList.dateRangePicker]: DateRangePicker,
   [autoFieldList.dateTimePicker]: DateTimePicker,
   [autoFieldList.dateTimeRangeField]: DateTimeRangeField,
+  [autoFieldList.richTextEditor]: RichTextEditor,
+  [autoFieldList.checkbox]: Checkbox,
 };

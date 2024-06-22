@@ -1,25 +1,31 @@
 import PropTypes from 'prop-types';
 import BellIcon from '@heroicons/react/24/solid/BellIcon';
-import UsersIcon from '@heroicons/react/24/solid/UsersIcon';
 import Bars3Icon from '@heroicons/react/24/solid/Bars3Icon';
-import MagnifyingGlassIcon from '@heroicons/react/24/solid/MagnifyingGlassIcon';
 import {
   Avatar,
   Badge,
   Box,
   IconButton,
+  MenuItem,
+  MenuList,
+  Paper,
   Stack,
   SvgIcon,
   Tooltip,
+  Typography,
   useMediaQuery
 } from '@mui/material';
 import { usePopover } from 'src/hooks/use-popover';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { logout, selectCurrentUser } from '../../store/authSlice';
 import { stringAvatar, stringToColor } from '../../utils/avatar';
-import { useRouter } from 'next/router';
 import { useCallback } from 'react';
+import { useRouter } from 'next/router';
 import { AccountPopover } from '../shared-components/account-popover';
+import { Logo } from '../../components/logo';
+import { ChatBubbleOvalLeftIcon } from '@heroicons/react/24/solid';
+import NextLink from 'next/link';
+import { navItems } from './config';
 
 const SIDE_NAV_WIDTH = 280;
 const TOP_NAV_HEIGHT = 64;
@@ -47,16 +53,13 @@ export const TopNav = (props) => {
         component="header"
         sx={{
           boxShadow: '0 1px 3px 0 rgba(0, 0, 0, 0.12)',
-          background: 'rgba(255, 255, 255, 0.2)',
+          background: '#FBC02D',
           backdropFilter: 'blur(20px) saturate(160%) contrast(45%) brightness(140%)',
           position: 'sticky',
           left: {
             lg: `${SIDE_NAV_WIDTH}px`
           },
           top: 0,
-          width: {
-            lg: `calc(100% - ${SIDE_NAV_WIDTH}px)`
-          },
           zIndex: (theme) => theme.zIndex.appBar
         }}
       >
@@ -67,7 +70,7 @@ export const TopNav = (props) => {
           spacing={2}
           sx={{
             minHeight: TOP_NAV_HEIGHT,
-            px: 2
+            px: 6.5
           }}
         >
           <Stack
@@ -82,26 +85,20 @@ export const TopNav = (props) => {
                 </SvgIcon>
               </IconButton>
             )}
-            <Tooltip title="Search">
-              <IconButton>
-                <SvgIcon fontSize="small">
-                  <MagnifyingGlassIcon />
-                </SvgIcon>
-              </IconButton>
-            </Tooltip>
+            {/* <Tooltip title="Search"> */}
+            {/*   <IconButton> */}
+            {/*     <SvgIcon fontSize="small"> */}
+            {/*       <MagnifyingGlassIcon /> */}
+            {/*     </SvgIcon> */}
+            {/*   </IconButton> */}
+            {/* </Tooltip> */}
+            {lgUp && <Logo sx={{height: 40}}/>}
           </Stack>
           <Stack
             alignItems="center"
             direction="row"
             spacing={2}
           >
-            <Tooltip title="Contacts">
-              <IconButton>
-                <SvgIcon fontSize="small">
-                  <UsersIcon />
-                </SvgIcon>
-              </IconButton>
-            </Tooltip>
             <Tooltip title="Notifications">
               <IconButton>
                 <Badge
@@ -113,6 +110,13 @@ export const TopNav = (props) => {
                     <BellIcon />
                   </SvgIcon>
                 </Badge>
+              </IconButton>
+            </Tooltip>
+            <Tooltip title="Contacts">
+              <IconButton>
+                <SvgIcon fontSize="small">
+                  <ChatBubbleOvalLeftIcon/>
+                </SvgIcon>
               </IconButton>
             </Tooltip>
             <Avatar
@@ -136,11 +140,23 @@ export const TopNav = (props) => {
         onClose={accountPopover.handleClose}
         items={[
           {
+            onClick: () => router.push('/user/profile'),
+            children: <>Profile</>
+          },
+          {
             onClick: handleSignOut,
             children: <>Sign out</>
           }
         ]}
       />
+      {lgUp && <Paper>
+        <MenuList sx={{display: 'flex', px: 6.5, py: 0}}>
+          {navItems.map((item, index) => <MenuItem key={index} sx={{gap: 1.5, py: 1.5}} component={NextLink} href={item.path}>
+            {item.icon}
+            <Typography>{item.title}</Typography>
+          </MenuItem>)}
+        </MenuList>
+      </Paper>}
     </>
   );
 };
