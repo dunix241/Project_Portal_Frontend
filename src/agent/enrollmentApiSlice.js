@@ -21,9 +21,17 @@ export const enrollmentApiSlice =
           }),
           providesTags: (result = [], error, arg) => ['Enrollment', ...(result?.items?.map(({id}) => ({type: 'Enrollment', id})) || [])]
         }),
+        getEnrollmentHistory: builder.query({
+          query: ({
+            enrollmentId
+          }) => ({
+            url: `${enrollmentApiBaseUrl}/${endpointTypes.pms}/History?enrollmentId=${enrollmentId}`, method: 'get'
+          }),
+          providesTags: (result = [], error, arg) => ['EnrollmentHistory']
+        }),
         getEnrollment: builder.query({
           query: ({id}) => ({
-            url: `${enrollmentApiBaseUrl}/${id}`,
+            url: `${enrollmentApiBaseUrl}/pms/${id}`,
             method: 'get'
           }),
           providesTags: (result, error, arg) => {
@@ -48,40 +56,7 @@ export const enrollmentApiSlice =
             return [{ type: 'Enrollment', id: arg.id }]
           }
         }),
-        listEnrollmentMembers: builder.query({
-          query: ({
-            id
-          }) => ({
-            url: `${enrollmentApiBaseUrl}/${endpointTypes.pms}/${id}/Members`, method: 'get'
-          }),
-          providesTags: (result = [], error, arg) => ['EnrollmentMember', ...(result?.enrollmentMembers?.map(({id}) => ({type: 'EnrollmentMember', id})) || [])]
-        }),
-        addEnrollmentMember: builder.mutation({
-          query: (payload) => ({
-            url: `${enrollmentApiBaseUrl}/${endpointTypes.pms}/${payload.id}/Members`,
-            method: 'post',
-            data: payload
-          }),
-          invalidatesTags: ['Enrollment']
-        }),
-        updateEnrollmentMember: builder.mutation({
-          query: (payload) => ({
-            url: `${enrollmentApiBaseUrl}/${endpointTypes.pms}/Members/${payload.id}`,
-            method: 'put',
-            data: payload
-          }),
-          invalidatesTags: (result, error, arg) => {
-            return [{ type: 'EnrollmentMember', id: arg.id }]
-          }
-        }),
-        removeEnrollmentMember: builder.mutation({
-          query: (payload) => ({
-            url: `${enrollmentApiBaseUrl}/${endpointTypes.pms}/Members/${payload.id}`,
-            method: 'delete'
-          }),
-          invalidatesTags: ['EnrollmentMember']
-        })
       })
     })
 
-export const {useListEnrollmentsQuery, useLazyListEnrollmentsQuery, useGetEnrollmentQuery, useAddEnrollmentMutation, useUpdateEnrollmentMutation, useRemoveEnrollmentMutation} = enrollmentApiSlice
+export const {useListEnrollmentsQuery, useLazyListEnrollmentsQuery, useGetEnrollmentHistoryQuery, useGetEnrollmentQuery, useAddEnrollmentMutation, useUpdateEnrollmentMutation, useRemoveEnrollmentMutation} = enrollmentApiSlice

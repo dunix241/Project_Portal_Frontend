@@ -1,5 +1,6 @@
-import { Autocomplete as MuiAutocomplete, Box, TextField, Typography } from '@mui/material';
+import { Box, Typography } from '@mui/material';
 import { Controller, useFormContext } from 'react-hook-form';
+import { Dropzone } from '@dropzone-ui/react';
 
 export default function Autocomplete(props) {
     const {control, setValue, watch, formState: {errors}} = useFormContext();
@@ -12,21 +13,27 @@ export default function Autocomplete(props) {
                 control={control}
                 rules={rules}
                 defaultValue={defaultValue}
-                render={({field: {onChange, ...field}}) => {
+                render={({field}) => {
                   return (
-                    <MuiAutocomplete
+                    <Dropzone
+                      accept='application/pdf'
+                      maxFiles={1}
+                      behaviour='replace'
+                      footer={false}
                       {...other}
                       {...field}
-                      onChange={(e, value) => onChange(value)}
-                      renderInput={(params) => <TextField {...params} {...inputProps}
-                                                          error={!!errors[name]}
-                                                          helperText={errors[name] && errors[name].message}
-                      />}
                     />
                   )
                 }}
-                onChange={([, data]) => data}
             />
+          {errors[name] &&
+            <Typography
+              variant="subtitle2"
+              sx={{ my: 2, color: 'error.main', textAlign: 'center' }}
+            >
+              {errors[name].message}
+            </Typography>
+          }
         </Box>
     )
 }

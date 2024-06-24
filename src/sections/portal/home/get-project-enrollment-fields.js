@@ -69,7 +69,6 @@ export function getProjectEnrollmentFields(props) {
       name: 'heirFortunes',
       component: autoFieldList.richTextEditor,
       fullWidth: true,
-      multiline: true,
       size: 'small',
       placeholder: 'Heir Fortunes',
       hidden: (fields) => {

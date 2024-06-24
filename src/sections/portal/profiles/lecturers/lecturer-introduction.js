@@ -44,7 +44,7 @@ export default function LecturerIntroduction(props) {
         </Typography>
         <Box>
           <Typography variant={'h6'}>
-            {lecturerData?.title} {lecturerData?.name}
+            {lecturerData?.title} {lecturerData?.fullName}
           </Typography>
           <Typography variant={'body2'}>
             {lecturerData?.headline}

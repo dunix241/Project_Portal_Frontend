@@ -20,6 +20,6 @@ export function getItem(key: string, parsing: boolean = true): any {
     const val = localStorage.getItem(key)
     return parsing ? JSON.parse(val) : val;
   }
-  console.error('localStorage is undefined')
+
   return null
 }

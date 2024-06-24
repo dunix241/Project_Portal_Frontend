@@ -2,7 +2,7 @@ import { Box, Typography } from '@mui/material';
 import { Controller, useFormContext } from 'react-hook-form';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { DateTimePicker, MobileDateTimePicker } from '@mui/x-date-pickers';
+import { DateTimePicker as RootDateTimePicker } from '@mui/x-date-pickers';
 
 export default function DateTimePicker(props) {
   const {control, setValue, watch, formState: {errors}} = useFormContext();
@@ -18,7 +18,7 @@ export default function DateTimePicker(props) {
           defaultValue={defaultValue}
           render={({field}) => {
             return (
-              <MobileDateTimePicker
+              <RootDateTimePicker
                 {...other}
                 {...field}
               />

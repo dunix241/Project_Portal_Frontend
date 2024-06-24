@@ -17,7 +17,7 @@ const Page = () => (
   <>
     <Head>
       <title>
-        Overview | Project Portal
+        Overview
       </title>
     </Head>
     <Box

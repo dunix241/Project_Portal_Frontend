@@ -28,6 +28,7 @@ import { useListStudentQuery } from '../../../agent/studentApliSlice';
 import { useListLecturersQuery } from '../../../agent/lecturerApliSlice';
 import { useAddSchoolMutation } from '../../../agent/schoolApiSlice';
 import { useAddEnrollmentMutation } from '../../../agent/enrollmentApiSlice';
+import { useRouter } from 'next/router';
 
 const DialogContent = (props) => {
   const { methods, dialogState } = props;
@@ -81,6 +82,8 @@ export default function ProjectOverview(props) {
 
   const [addEnrollment, { isLoading: isAddingEnrollment }] = useAddEnrollmentMutation();
 
+  const router = useRouter();
+
   const dialogConfig = useDialog();
 
   const pageActions = {
@@ -99,6 +102,10 @@ export default function ProjectOverview(props) {
         dialogConfig.onClose();
         return state;
       }],
+      [pageActions.onEnrollmentRedirect, () => {
+        router.push(`/portal/enrollments/${payload}`)
+        return state;
+      }],
       [pageActions.onDialogEnrollOpen, () => {
         dialogConfig.onOpen();
         return {
@@ -113,13 +120,13 @@ export default function ProjectOverview(props) {
       }],
       [pageActions.onDialogEnrollSubmit, () => {
         const body = {
-          projectId: payload.id,
+          projectId: payload.projectId,
           title: payload.title,
           vision: payload.vision,
           mission: payload.mission,
           canBeForked: payload.canBeForked,
           heirFortunes: payload.hairFortunes,
-          emails: [...payload.students, ...payload.supervisors]
+          emails: [...(payload.students || []), ...payload.supervisors]
         }
         addEnrollment(body).then(() => dispatch({type: pageActions.onDialogCancel}))
         return state;

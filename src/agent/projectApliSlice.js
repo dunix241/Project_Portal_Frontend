@@ -64,4 +64,4 @@ export const projectApiSlice =
       })
     })
 
-export const {useListProjectsQuery, useLazyListProjectsQuery, useGetProjectQuery, useGetProjectOverviewQuery, useAddProjectMutation, useUpdateProjectMutation, useRemoveProjectMutation} = projectApiSlice
+export const {useListProjectsQuery, useLazyListProjectsQuery, useGetProjectQuery, useLazyGetProjectQuery, useGetProjectOverviewQuery, useAddProjectMutation, useUpdateProjectMutation, useRemoveProjectMutation} = projectApiSlice

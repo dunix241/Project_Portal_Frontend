@@ -169,7 +169,7 @@ const Page = memo((props) => {
               ...state, dialogState: {
                 ...state.dialogState,
                 title: 'Add Project',
-                formValues: { name: '', schoolId: null },
+                formValues: {},
                 submitAction: projectSemesterActions.onDialogProjectSemesterAddSubmit,
                 fields: projectSemesterAddEditFields
               }
@@ -181,6 +181,7 @@ const Page = memo((props) => {
       ],
       [
         projectSemesterActions.onDialogProjectSemesterAddSubmit, () => {
+        console.log(payload)
         const body = {
           semesterId,
           ...payload

@@ -20,6 +20,7 @@ import { stringAvatar, stringToColor } from '../../utils/avatar';
 import { useRouter } from 'next/router';
 import { useCallback } from 'react';
 import { AccountPopover } from '../shared-components/account-popover';
+import ColorizedAvatar from '../../components/avatar';
 
 const SIDE_NAV_WIDTH = 280;
 const TOP_NAV_HEIGHT = 64;
@@ -36,7 +37,8 @@ export const TopNav = (props) => {
     () => {
       accountPopover.handleClose?.();
       dispatch(logout());
-      router.push('/auth/login')
+      router.push('/auth/login').then(() => {
+      })
     },
     [accountPopover.handleClose]
   );
@@ -115,18 +117,16 @@ export const TopNav = (props) => {
                 </Badge>
               </IconButton>
             </Tooltip>
-            <Avatar
+            <ColorizedAvatar
+              user={user}
               onClick={accountPopover.handleOpen}
               ref={accountPopover.anchorRef}
               sx={{
                 cursor: 'pointer',
                 height: 40,
                 width: 40,
-                bgcolor: stringToColor(user?.fullName || '')
               }}
-            >
-              {stringAvatar(user?.fullName || '')}
-            </Avatar>
+            />
           </Stack>
         </Stack>
       </Box>

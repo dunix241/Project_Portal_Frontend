@@ -19,7 +19,6 @@ export function useAsyncReducer(reducer, initialState, asyncReducer) {
 
   const thunkActionHandlers = useCallback((state, action) => {
     const {type, payload} = action;
-    console.log('handling', type)
     const handlers= [
       ...Object.keys(asyncReducer).map(key => [
         key, () => {
@@ -35,7 +34,6 @@ export function useAsyncReducer(reducer, initialState, asyncReducer) {
         return state
       }]
     ]
-    console.log(handlers)
     return handlers;
   }, [])
 

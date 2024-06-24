@@ -14,7 +14,7 @@ import { HeadingNode, QuoteNode } from '@lexical/rich-text';
 import { TableCellNode, TableNode, TableRowNode } from '@lexical/table';
 import { ListItemNode, ListNode } from '@lexical/list';
 import { CodeHighlightNode, CodeNode } from '@lexical/code';
-import { AutoLinkNode, LinkNode } from '@lexical/link';
+import { $isLinkNode, AutoLinkNode, LinkNode } from '@lexical/link';
 import { LinkPlugin } from '@lexical/react/LexicalLinkPlugin';
 import { ListPlugin } from '@lexical/react/LexicalListPlugin';
 import { MarkdownShortcutPlugin } from '@lexical/react/LexicalMarkdownShortcutPlugin';
@@ -24,10 +24,20 @@ import ListMaxIndentLevelPlugin from './plugins/ListMaxIndentLevelPlugin';
 import CodeHighlightPlugin from './plugins/CodeHighlightPlugin';
 import AutoLinkPlugin from './plugins/AutoLinkPlugin';
 import { OnChangePlugin } from '@lexical/react/LexicalOnChangePlugin';
-import React, { ReactNode } from 'react';
+import React, { forwardRef, ReactNode, useCallback, useEffect } from 'react';
 import { ClearEditorPlugin } from '@lexical/react/LexicalClearEditorPlugin';
-import { HashtagPlugin } from '@lexical/react/LexicalHashtagPlugin';
-import { SetInitialValuePlugin } from './plugins/SetInitialValuePlugin';
+import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext';
+import { parseEditorState } from 'lexical/LexicalUpdates';
+import {
+  $createParagraphNode,
+  $getRoot,
+  $getSelection,
+  $isRangeSelection,
+  $isTextNode
+} from 'lexical';
+import { $setBlocksType } from '@lexical/selection';
+import SubmitPlugin from './plugins/SubmitPlugin';
+import { EditorRefPlugin } from '@lexical/react/LexicalEditorRefPlugin';
 
 type PlaceholderProps = {
   text: string | null
@@ -57,82 +67,68 @@ export const editorConfig : InitialConfigType = {
     TableRowNode,
     AutoLinkNode,
     LinkNode
-  ]
-  // nodes: [
-  //   HeadingNode,
-  //   ListNode,
-  //   ListItemNode,
-  //   QuoteNode,
-  //   CodeNode,
-  //   TableNode,
-  //   TableCellNode,
-  //   TableRowNode,
-  //   HashtagNode,
-  //   CodeHighlightNode,
-  //   AutoLinkNode,
-  //   LinkNode,
-  //   OverflowNode,
-  //   PollNode,
-  //   StickyNode,
-  //   ImageNode,
-  //   InlineImageNode,
-  //   MentionNode,
-  //   EmojiNode,
-  //   ExcalidrawNode,
-  //   EquationNode,
-  //   AutocompleteNode,
-  //   KeywordNode,
-  //   HorizontalRuleNode,
-  //   TweetNode,
-  //   YouTubeNode,
-  //   FigmaNode,
-  //   MarkNode,
-  //   CollapsibleContainerNode,
-  //   CollapsibleContentNode,
-  //   CollapsibleTitleNode,
-  //   PageBreakNode,
-  //   LayoutContainerNode,
-  //   LayoutItemNode,
-  // ];
+  ],
 };
 
 type EditorProps = Partial<{
-  value: InitialEditorStateType
+  value: any
+}> & EditorBodyProps
+
+type EditorBodyProps = Partial<{
   onChange: (value: string) => void
-  placeholder?: string
+  placeholder?: string,
+  readOnly?: boolean
 }>
 
-export function Editor(props : EditorProps): ReactNode {
-  const {value, onChange, placeholder, ...other} = props;
+export const Editor = forwardRef((props : EditorProps, ref): ReactNode  => {
+  const {value, onChange, readOnly, placeholder, ...other} = props;
 
   return (
-    <LexicalComposer initialConfig={{...editorConfig, ...other, editorState: value}}>
-      <div className="editor-container" style={{margin: 0}}>
-        <ToolbarPlugin />
-        <div className="editor-inner" style={{backgroundColor: 'transparent'}}>
-          <RichTextPlugin
-            contentEditable={<ContentEditable className="editor-input"/>}
-            placeholder={<Placeholder text={placeholder}/>}
-            ErrorBoundary={LexicalErrorBoundary}
-          />
-          <HistoryPlugin/>
-          {/* <TreeViewPlugin /> */}
-          <AutoFocusPlugin/>
-          <CodeHighlightPlugin/>
-          <OnChangePlugin onChange={(editorState) => {
-            onChange?.(JSON.stringify(editorState));
-          }}/>
-          <ListPlugin/>
-          <LinkPlugin/>
-          <AutoLinkPlugin/>
-          <ListMaxIndentLevelPlugin maxDepth={7}/>
-          <MarkdownShortcutPlugin transformers={TRANSFORMERS}/>
-
-          <AutoFocusPlugin />
-          <ClearEditorPlugin />
-          <AutoLinkPlugin />
-        </div>
-      </div>
+    <LexicalComposer initialConfig={{...editorConfig, ...other, editorState: value, editable: !readOnly}}>
+      <EditorBody
+        {...props}
+      />
     </LexicalComposer>
   );
-}
+})
+
+export const EditorBody = forwardRef((props: EditorProps, ref) => {
+  const { value, onChange, placeholder, readOnly, ...other } = props;
+  // useEffect(() => {
+  //   editor.dispatchCommand(CLEAR_EDITOR_COMMAND, null);
+  // }, [])
+
+  return readOnly
+    ? <RichTextPlugin
+      contentEditable={<ContentEditable contentEditable={false}/>}
+      ErrorBoundary={LexicalErrorBoundary}
+    />
+    :
+    <div className="editor-container" style={{ margin: 0, maxWidth: 'unset', width: '100%' }}>
+      {/*<EditorRefPlugin editorRef={ref}/>*/}
+      <ToolbarPlugin/>
+      <div className="editor-inner" style={{ backgroundColor: 'transparent' }}>
+        <RichTextPlugin
+          contentEditable={<ContentEditable className="editor-input"/>}
+          placeholder={<Placeholder text={placeholder}/>}
+          ErrorBoundary={LexicalErrorBoundary}
+        />
+        <HistoryPlugin/>
+        {/* <TreeViewPlugin /> */}
+        <AutoFocusPlugin/>
+        <CodeHighlightPlugin/>
+        <OnChangePlugin onChange={(editorState) => {
+          onChange?.(JSON.stringify(editorState));
+        }}/>
+        <ListPlugin/>
+        <LinkPlugin/>
+        <AutoLinkPlugin/>
+        <ListMaxIndentLevelPlugin maxDepth={7}/>
+        <MarkdownShortcutPlugin transformers={TRANSFORMERS}/>
+
+        <AutoFocusPlugin/>
+        <ClearEditorPlugin/>
+        <AutoLinkPlugin/>
+      </div>
+    </div>;
+})

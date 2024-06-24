@@ -16,6 +16,7 @@ import {
 import { $isLinkNode, TOGGLE_LINK_COMMAND } from "@lexical/link";
 import {
   $isParentElementRTL,
+  $patchStyleText,
   $wrapNodes,
   $isAtNodeEnd
 } from "@lexical/selection";
@@ -39,6 +40,7 @@ import {
   getDefaultCodeLanguage,
   getCodeLanguages
 } from "@lexical/code";
+import DropdownColorPicker from '../ui/DropdownColorPicker';
 
 const LowPriority = 1;
 
@@ -433,6 +435,8 @@ export default function ToolbarPlugin() {
   const [isUnderline, setIsUnderline] = useState(false);
   const [isStrikethrough, setIsStrikethrough] = useState(false);
   const [isCode, setIsCode] = useState(false);
+  const [fontColor, setFontColor] = useState('#000');
+  const [bgColor, setBgColor] = useState('#fff');
 
   const updateToolbar = useCallback(() => {
     const selection = $getSelection();
@@ -526,6 +530,34 @@ export default function ToolbarPlugin() {
       });
     },
     [editor, selectedElementKey]
+  );
+  const applyStyleText = useCallback(
+    (styles, skipHistoryStack) => {
+      editor.update(
+        () => {
+          const selection = $getSelection();
+          if (selection !== null) {
+            console.log('applying style', styles)
+            $patchStyleText(selection, styles);
+          }
+        },
+        // skipHistoryStack ? { tag: 'historic' } : {}
+      );
+    },
+    [editor]
+  );
+  const onFontColorSelect = useCallback(
+    (value, skipHistoryStack) => {
+      applyStyleText({color: value}, skipHistoryStack);
+    },
+    [applyStyleText],
+  );
+
+  const onBgColorSelect = useCallback(
+    (value, skipHistoryStack) => {
+      applyStyleText({'background-color': value}, skipHistoryStack);
+    },
+    [applyStyleText],
   );
 
   const insertLink = useCallback(() => {
@@ -663,6 +695,22 @@ export default function ToolbarPlugin() {
           >
             <i className="format left-align" />
           </button>
+          <DropdownColorPicker
+            buttonClassName="toolbar-item color-picker"
+            buttonAriaLabel="Formatting text color"
+            buttonIconClassName="icon font-color"
+            color={fontColor}
+            onChange={onFontColorSelect}
+            title="text color"
+          />
+          <DropdownColorPicker
+            buttonClassName="toolbar-item color-picker"
+            buttonAriaLabel="Formatting background color"
+            buttonIconClassName="icon bg-color"
+            color={bgColor}
+            onChange={onBgColorSelect}
+            title="bg color"
+          />
           <button
             onClick={() => {
               editor.dispatchCommand(FORMAT_ELEMENT_COMMAND, "center");

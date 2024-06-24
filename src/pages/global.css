@@ -749,3 +749,10 @@ i.right-align {
 i.justify-align {
     background-image: url(/images/icons/justify.svg);
 }
+
+.icon.font-color {
+  background-image: url(/images/icons/font-color.svg);
+}
+.icon.bg-color {
+  background-image: url(/images/icons/bg-color.svg);
+}

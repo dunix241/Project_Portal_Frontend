@@ -26,6 +26,7 @@ import { Logo } from '../../components/logo';
 import { ChatBubbleOvalLeftIcon } from '@heroicons/react/24/solid';
 import NextLink from 'next/link';
 import { navItems } from './config';
+import ColorizedAvatar from '../../components/avatar';
 
 const SIDE_NAV_WIDTH = 280;
 const TOP_NAV_HEIGHT = 64;
@@ -119,18 +120,16 @@ export const TopNav = (props) => {
                 </SvgIcon>
               </IconButton>
             </Tooltip>
-            <Avatar
+            <ColorizedAvatar
+              user={user}
               onClick={accountPopover.handleOpen}
               ref={accountPopover.anchorRef}
               sx={{
                 cursor: 'pointer',
                 height: 40,
                 width: 40,
-                bgcolor: stringToColor(user?.fullName || '')
               }}
-            >
-              {stringAvatar(user?.fullName || '')}
-            </Avatar>
+            />
           </Stack>
         </Stack>
       </Box>

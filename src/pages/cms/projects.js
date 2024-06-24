@@ -19,39 +19,16 @@ import { Layout as DashboardLayout } from '../../layouts/dashboard/layout';
 import { useTable } from '../../hooks/table/use-table';
 import { EDialog } from '../../components/dialog';
 import { useDialog } from '../../hooks/use-dialog';
-import {
-  useAddLecturerMutation,
-  useLazyListLecturersQuery,
-  useRemoveLecturerMutation,
-  useUpdateLecturerMutation
-} from '../../agent/lecturerApliSlice';
-import LecturerTable, { lecturerActions } from '../../sections/cms/academic/lecturer-table';
 import { reducerBuilder } from '../../utils/reducer-builder';
 import { FormProvider, useForm } from 'react-hook-form';
-import SchoolTable, { schoolActions } from '../../sections/cms/academic/school-table';
-import {
-  useAddSchoolMutation,
-  useLazyListSchoolsQuery,
-  useRemoveSchoolMutation,
-  useUpdateSchoolMutation
-} from '../../agent/schoolApiSlice';
+import { useLazyListSchoolsQuery } from '../../agent/schoolApiSlice';
 import Field from '../../components/auto-form/components/Field';
-import { useResetPasswordMutation } from '../../agent/authApiSlice';
-import {
-  useAddStudentMutation,
-  useLazyListStudentQuery,
-  useRemoveStudentMutation,
-  useUpdateStudentMutation
-} from '../../agent/studentApliSlice';
-import StudentTable, { studentActions } from '../../sections/cms/academic/student-table';
 import { useAsyncReducer } from '../../hooks/use-async-reducer';
-import { getLecturerAddEditFields } from '../../sections/cms/academic/lecturer-add-edit-fields';
-import { getStudentAddEditFields } from '../../sections/cms/academic/student-add-edit-fields';
-import { schoolAddEditFields } from '../../sections/cms/academic/school-add-edit-fields';
 import ProjectTable, { projectActions } from '../../sections/cms/projects/project-table';
 import {
   useAddProjectMutation,
-  useLazyListProjectsQuery, useRemoveProjectMutation,
+  useLazyListProjectsQuery,
+  useRemoveProjectMutation,
   useUpdateProjectMutation
 } from '../../agent/projectApliSlice';
 import { getProjectAddEditFields } from '../../sections/cms/projects/project-add-edit-fields';
